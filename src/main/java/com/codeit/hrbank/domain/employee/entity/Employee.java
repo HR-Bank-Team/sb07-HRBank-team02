@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Table(name = "employees")
@@ -23,15 +20,15 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "employee_id")
-    private Long employeeId;
+    private Long id;
 
-    @Column(name = "name",nullable = false)
+    @Column(name = "name",nullable = false,length = 100)
     private String name;
 
-    @Column(name = "position",nullable = false)
+    @Column(name = "position",nullable = false,length = 100)
     private String position;
 
-    @Column(name= "email",nullable = false, unique=true)
+    @Column(name= "email",nullable = false, unique=true,length = 100)
     private String email;
 
     @Column(name ="hire_date",nullable = false)
@@ -43,7 +40,7 @@ public class Employee {
 
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status",nullable = false)
+    @Column(name = "status",nullable = false,length = 100)
     private EmployeeStatus status;
 
     @CreatedDate
