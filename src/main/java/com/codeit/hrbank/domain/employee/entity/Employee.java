@@ -34,7 +34,6 @@ public class Employee {
     @Column(name= "email",nullable = false, unique=true)
     private String email;
 
-    @CreatedDate
     @Column(name ="hire_date",nullable = false)
     private LocalDateTime hireDate;
 
