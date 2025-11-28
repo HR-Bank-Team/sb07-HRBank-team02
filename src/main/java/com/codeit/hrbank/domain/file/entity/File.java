@@ -2,12 +2,14 @@ package com.codeit.hrbank.domain.file.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "files")
 public class File {
