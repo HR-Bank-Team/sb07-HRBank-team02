@@ -19,13 +19,16 @@ public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    private Long employeeId;
 
     @Column(name = "name",nullable = false)
     private String name;
 
     @Column(name = "position",nullable = false)
     private String position;
+
+    @Column(name= "email",nullable = false, unique=true)
+    private String email;
 
     @CreatedDate
     @Column(name ="hire_date",nullable = false)
