@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Table(name = "employees")
 @Getter
@@ -35,7 +36,7 @@ public class Employee {
 
     @CreatedDate
     @Column(name ="hire_date",nullable = false)
-    private Instant hireDate;
+    private LocalDateTime hireDate;
 
 
     @Column(name = "employee_number",nullable = false,unique = true)
@@ -48,10 +49,10 @@ public class Employee {
 
     @CreatedDate
     @Column(name = "created_at",nullable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
 }
