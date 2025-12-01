@@ -22,7 +22,7 @@ public class ChangeLog extends BaseEntity {
 
   @Column(nullable = false, length = 100)
   @Enumerated(EnumType.STRING)
-  private ChannelLogType type;
+  private ChangeLogType type;
 
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
