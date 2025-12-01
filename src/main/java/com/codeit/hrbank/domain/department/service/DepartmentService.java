@@ -7,7 +7,6 @@ import com.codeit.hrbank.domain.department.dto.DepartmentDto;
 import com.codeit.hrbank.domain.department.entity.Department;
 import com.codeit.hrbank.domain.department.mapper.DepartmentMapper;
 import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +26,7 @@ public class DepartmentService {
     if(departmentRepository.existsByName(request.name())){
       throw new IllegalStateException("중복된 부서명입니다.");
     }
-    Department department = new Department(request.name(), request.description(), LocalDateTime.now());
+    Department department = departmentMapper.toEntity(request);
     return departmentMapper.toDto(departmentRepository.save(department));
   }
   
