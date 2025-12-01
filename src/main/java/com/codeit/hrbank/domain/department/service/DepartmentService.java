@@ -83,8 +83,6 @@ public class DepartmentService {
 
   // 정렬 필드 검증 메서드 분리
   private void validateSortField(String sortField) {
-    if (sortField == null) return;
-
     if (!sortField.equals("name") && !sortField.equals("establishedDate")) {
       throw new IllegalArgumentException("정렬 기준은 null, name, establishedDate 중 하나여야 합니다.");
     }
