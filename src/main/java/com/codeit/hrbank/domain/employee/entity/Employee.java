@@ -48,5 +48,29 @@ public class Employee extends BaseUpdatableEntity {
     @JoinColumn(name = "department_id")
     private Department department;
 
+    public void update(String name, String position, String email, LocalDateTime hireDate, EmployeeStatus status, File profile, Department department) {
+        if(name != null && !name.equals(this.name)) {
+            this.name = name;
+        }
+        if(position != null && !position.equals(this.position)) {
+            this.position = position;
+        }
+        if(email != null && !email.equals(this.email)) {
+            this.email = email;
+        }
+        if(hireDate != null && !hireDate.equals(this.hireDate)) {
+            this.hireDate = hireDate;
+        }
+        if(status != null && !status.equals(this.status)) {
+            this.status = status;
+        }
+        if(profile != null && !profile.equals(this.profile)) {
+            this.profile = profile;
+        }
+        if(department != null && !department.equals(this.department)) {
+            this.department = department;
+        }
+    }
+
 
 }
