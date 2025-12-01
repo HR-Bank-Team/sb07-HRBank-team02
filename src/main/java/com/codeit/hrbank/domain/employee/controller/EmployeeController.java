@@ -57,7 +57,7 @@ public class EmployeeController {
         return ResponseEntity.ok(response); // 200 OK
     }
 
-    // 직원 삭제
+    // 직원 정보 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
