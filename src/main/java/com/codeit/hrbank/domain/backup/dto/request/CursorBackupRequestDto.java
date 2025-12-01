@@ -9,10 +9,8 @@ public record CursorBackupRequestDto(
         BackupStatus status,
         LocalDateTime startedAtFrom,
         LocalDateTime startedAtTo,
-        Long idAfter,
-        Long cursor,
-        Long size,
         String sortField,
-        String sortDirection
+        String sortDirection,
+        Long size
 ) {
 }
