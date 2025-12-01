@@ -1,5 +1,6 @@
 package com.codeit.hrbank.domain.department.mapper;
 
+import com.codeit.hrbank.domain.department.dto.DepartmentCreateRequest;
 import com.codeit.hrbank.domain.department.dto.DepartmentDto;
 import com.codeit.hrbank.domain.department.entity.Department;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,13 @@ public class DepartmentMapper {
                 department.getDescription(),
                 department.getEstablishedDate().toLocalDate(),
                 totalEmployeeNumber);
+    }
+
+    public Department toEntity(DepartmentCreateRequest departmentCreateRequest) {
+            return new Department(
+                    departmentCreateRequest.name(),
+                    departmentCreateRequest.description(),
+                    departmentCreateRequest.establishDate().atStartOfDay()
+                    );
     }
 }
