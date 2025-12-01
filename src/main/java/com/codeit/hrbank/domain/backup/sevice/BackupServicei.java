@@ -1,16 +1,26 @@
 package com.codeit.hrbank.domain.backup.sevice;
 
+import com.codeit.hrbank.domain.backup.repository.BackupRepository;
 import com.codeit.hrbank.domain.changelog.entity.ChangeLog;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
+@RequiredArgsConstructor
 public class BackupServicei implements BackupService{
 
-    @Override
-    public boolean isNecessaryBackup(ChangeLog changeLog) {
-        return false;
+
+    private final BackupRepository backupRepository;
+    private final BackupScheduler backupScheduler;
+
+    private boolean isNecessaryBackup(ChangeLog changeLog) {
+        return changeLog.getAt().isAfter(backupScheduler.getRecentBackupTime());
     }
 
-    @Override
-    public void registerBackup(ChangeLog changeLog) {
+
+
+
+    private void registerBackup(ChangeLog changeLog) {
 
     }
 }
