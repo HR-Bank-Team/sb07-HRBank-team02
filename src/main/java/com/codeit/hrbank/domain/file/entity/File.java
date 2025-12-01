@@ -1,23 +1,19 @@
 package com.codeit.hrbank.domain.file.entity;
 
+import com.codeit.hrbank.domain.base.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "files")
-public class File {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "file_id")
-    private Long id;
+public class File extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
