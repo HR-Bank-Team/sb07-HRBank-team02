@@ -1,7 +1,7 @@
 package com.codeit.hrbank.domain.employee.controller;
 
 import com.codeit.hrbank.domain.employee.dto.EmployeeCreateRequest;
-import com.codeit.hrbank.domain.employee.dto.EmployeeResponse;
+import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
 import com.codeit.hrbank.domain.employee.dto.EmployeeUpdateRequest;
 import com.codeit.hrbank.domain.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -22,25 +22,25 @@ public class EmployeeController {
 
     // 직원 전체 조회
     @GetMapping
-    public ResponseEntity<List<EmployeeResponse>> getAllEmployee() {
+    public ResponseEntity<List<EmployeeDto>> getAllEmployee() {
         List<EmployeeResponse> responses = employeeService.getAllEmployee();
         return ResponseEntity.ok(responses); // 200 OK
     }
 
     // 직원 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable Long id) {
-        EmployeeResponse response = employeeService.getEmployee(id);
+    public ResponseEntity<EmployeeDto> getEmployee(@PathVariable Long id) {
+        EmployeeDto response = employeeService.getEmployee(id);
         return ResponseEntity.ok(response); // 200 OK
     }
 
     // 직원 등록
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<EmployeeResponse> createEmployee(
+    public ResponseEntity<EmployeeDto> createEmployee(
             @RequestPart("employee") EmployeeCreateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        EmployeeResponse response = employeeService.createEmployee(request, file);
+        EmployeeDto response = employeeService.createEmployee(request, file);
         return ResponseEntity
                 .status(HttpStatus.CREATED) // 201 Created
                 .body(response);
@@ -48,7 +48,7 @@ public class EmployeeController {
 
     // 직원 정보 수정
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<EmployeeResponse> updateEmployee(
+    public ResponseEntity<EmployeeDto> updateEmployee(
             @PathVariable Long id,
             @RequestPart("employee") EmployeeUpdateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file
