@@ -9,6 +9,7 @@ import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
 import com.codeit.hrbank.domain.employee.entity.Employee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class ChangeLogService {
     private ChangeLogRepository changeLogRepository;
     private DiffRepository diffRepository;
 
+    @Transactional
     public void recordLogByAddEmployee(
             String employeeNumber,
             String ipAddress,
@@ -36,6 +38,7 @@ public class ChangeLogService {
 
     }
 
+    @Transactional
     public void recordLogByUpdateEmployee(
             String employeeNumber,
             String ipAddress,
@@ -52,6 +55,7 @@ public class ChangeLogService {
         diffRepository.saveAll(diffs);
     }
 
+    @Transactional
     public void recordLogByDeleteEmployee(
             String employeeNumber,
             String ipAddress,
@@ -63,18 +67,9 @@ public class ChangeLogService {
         diffRepository.saveAll(diffs);
     }
 
+    public void getChangeLogsSorted(){
 
-//    **이력 목록 조회**
-//   - **{대상 직원 사번}**, **{메모}**, **{IP 주소}**, **{시간}, {유형}**으로 이력 목록을 조회할 수 있습니다.
-//            - **{대상 직원 사번}**, **{메모}**, **{IP 주소}**은 부분 일치 조건입니다.
-//            - **{시간}**은 범위 조건입니다.
-//    - **{유형}**은 완전 일치 조건입니다.
-//            - 조회 조건이 여러 개인 경우 모든 조건을 만족한 결과로 조회합니다.
-//            - **{IP 주소}**, **{시간}**으로 정렬 및 페이지네이션을 구현합니다.
-//    - 여러 개의 정렬 조건 중 선택적으로 1개의 정렬 조건만 가질 수 있습니다.
-//            - 정확한 페이지네이션을 위해 **{이전 페이지의 마지막 요소 ID}**를 활용합니다.
-//            - 화면을 고려해 적절한 페이지네이션 전략을 선택합니다.
-//            - 데이터 크기를 고려, **{변경 상세 내용}**은 포함하지 않습니다.
+    }
 
 
     private List<Diff> extractDetailsByAdd(Employee employee, ChangeLog changeLog) {
