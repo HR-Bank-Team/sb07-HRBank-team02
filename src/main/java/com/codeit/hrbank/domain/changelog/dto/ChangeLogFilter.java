@@ -2,10 +2,9 @@ package com.codeit.hrbank.domain.changelog.dto;
 
 import com.codeit.hrbank.domain.changelog.entity.ChangeLogType;
 import lombok.Getter;
-import lombok.Setter;
+
 
 @Getter
-@Setter
 public class ChangeLogFilter {
 
     // 선택적 필터
@@ -21,4 +20,15 @@ public class ChangeLogFilter {
     // 커서 기반 페이징
     private String cursor; // 다음 페이지 시작 기준 timestamp (ISO 8601 문자열)
     private Long idAfter;  // 커서와 동일한 at값에서 id 기준으로 다음 페이지 시작
+
+    public ChangeLogFilter(ChangeLogType type, String memo, String employeeNumber, String sortField, String sortDirection, int size, String cursor, Long idAfter) {
+        this.type = type;
+        this.memo = memo;
+        this.employeeNumber = employeeNumber;
+        this.sortField = sortField;
+        this.sortDirection = sortDirection;
+        this.size = size;
+        this.cursor = cursor;
+        this.idAfter = idAfter;
+    }
 }
