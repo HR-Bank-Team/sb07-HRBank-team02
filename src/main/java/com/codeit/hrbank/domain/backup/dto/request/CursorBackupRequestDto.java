@@ -4,7 +4,7 @@ import com.codeit.hrbank.domain.backup.entity.BackupStatus;
 
 import java.time.LocalDateTime;
 
-public record BackupRequestDto(
+public record CursorBackupRequestDto(
         String worker,
         BackupStatus status,
         LocalDateTime startedAtFrom,
