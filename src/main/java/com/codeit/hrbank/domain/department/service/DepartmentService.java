@@ -25,7 +25,7 @@ public class DepartmentService {
   //부서 생성
   public DepartmentDto createDepartment(DepartmentCreateRequest request){
     if(departmentRepository.existsByName(request.name())){
-      throw new RuntimeException("중복된 부서명입니다.");
+      throw new IllegalStateException("중복된 부서명입니다.");
     }
     Department department = new Department(request.name(), request.description(), LocalDateTime.now());
     return departmentMapper.toDto(departmentRepository.save(department));
@@ -87,7 +87,7 @@ public class DepartmentService {
     if (sortField == null) return;
 
     if (!sortField.equals("name") && !sortField.equals("establishedDate")) {
-      throw new RuntimeException("정렬 기준은 null, name, establishedDate 중 하나여야 합니다.");
+      throw new IllegalArgumentException("정렬 기준은 null, name, establishedDate 중 하나여야 합니다.");
     }
   }
 }
