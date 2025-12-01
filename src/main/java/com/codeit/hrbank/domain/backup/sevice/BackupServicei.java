@@ -37,7 +37,7 @@ public class BackupServicei implements BackupService{
         return null;
     }
     private boolean isNecessaryBackup(LocalDateTime changeLogTime) {
-        return changeLogTime.isAfter(backupScheduler.getRecentBackupTime());
+        return changeLogTime.isAfter(backupScheduler.getLatestBackupTime());
     }
 
 }
