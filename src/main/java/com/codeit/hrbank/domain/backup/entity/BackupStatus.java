@@ -1,6 +1,6 @@
 package com.codeit.hrbank.domain.backup.entity;
 
-public enum Status {
+public enum BackupStatus {
     IN_PROGRESS("진행 중"),
     COMPLETED("완료"),
     FAILED("실패"),
@@ -8,7 +8,7 @@ public enum Status {
 
     private final String desc;
 
-    Status(String desc) {
+    BackupStatus(String desc) {
         this.desc = desc;
     }
 }

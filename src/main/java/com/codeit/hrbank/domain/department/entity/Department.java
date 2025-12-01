@@ -1,25 +1,22 @@
 package com.codeit.hrbank.domain.department.entity;
 
-import jakarta.persistence.*;
+import com.codeit.hrbank.domain.base.BaseUpdatableEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "departments")
-public class Department {
-
-    @Id
-    @Column(name = "department_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+public class Department extends BaseUpdatableEntity {
 
     @Column(nullable = false, length = 100, unique = true)
     private String name;
@@ -27,15 +24,7 @@ public class Department {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "established_date",nullable = false)
+    @Column(name = "established_date", nullable = false)
     private LocalDateTime establishedDate;
 
-    @CreatedDate
-    @Column(name = "created_at",nullable = false)
-    private LocalDateTime createdAt;
-
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }
