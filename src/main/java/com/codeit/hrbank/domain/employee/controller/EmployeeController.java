@@ -3,7 +3,7 @@ package com.codeit.hrbank.domain.employee.controller;
 import com.codeit.hrbank.domain.employee.dto.EmployeeCreateRequest;
 import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
 import com.codeit.hrbank.domain.employee.dto.EmployeeUpdateRequest;
-import com.codeit.hrbank.domain.employee.service.EmployeeService;
+import com.codeit.hrbank.domain.employee.sevice.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +23,7 @@ public class EmployeeController {
     // 직원 전체 조회
     @GetMapping
     public ResponseEntity<List<EmployeeDto>> getAllEmployee() {
-        List<EmployeeResponse> responses = employeeService.getAllEmployee();
+        List<EmployeeDto> responses = employeeService.getAllEmployee();
         return ResponseEntity.ok(responses); // 200 OK
     }
 
@@ -53,7 +53,7 @@ public class EmployeeController {
             @RequestPart("employee") EmployeeUpdateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        EmployeeResponse response = employeeService.updateEmployee(id, request, file);
+        EmployeeDto response = employeeService.updateEmployee(id, request, file);
         return ResponseEntity.ok(response); // 200 OK
     }
 
