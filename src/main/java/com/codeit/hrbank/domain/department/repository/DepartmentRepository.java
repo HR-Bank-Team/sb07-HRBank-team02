@@ -12,7 +12,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
    * 이름 또는 설명 부분 검색 + 안전한 커서 페이지네이션 + 정렬 정렬 기준: name 또는 establishedDate
    */
   // 부서 관리 목록에서 부서명이나 설명으로 키워드를 검색하고, Sort에 따라, 정렬해주는 쿼리.
-  // 서비스 단에서 쓸 때 => Sort sort = Sort.by(Sort.Order.asc("name"), Sort.Order.desc("establishedDate"));
+  // 서비스 단에서 쓸 때 => Pageable pageable = PageRequest.of(0, 5, Sort.by("name").ascending());
   @Query("""
           SELECT d FROM Department d 
           WHERE (:keyword IS NULL OR d.name LIKE %:keyword% OR d.description LIKE %:keyword%)
