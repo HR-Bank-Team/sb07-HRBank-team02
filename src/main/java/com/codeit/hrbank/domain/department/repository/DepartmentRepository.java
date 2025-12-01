@@ -1,9 +1,31 @@
 package com.codeit.hrbank.domain.department.repository;
 
 import com.codeit.hrbank.domain.department.entity.Department;
+import java.util.List;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@Repository
-public interface DepartmentRepository extends JpaRepository<Department,Long> {
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
+  /**
+   * 이름 또는 설명 부분 검색 + 안전한 커서 페이지네이션 + 정렬 정렬 기준: name 또는 establishedDate
+   */
+  // 부서 관리 목록에서 부서명이나 설명으로 키워드를 검색하고, Sort에 따라, 정렬해주는 쿼리.
+  // 서비스 단에서 쓸 때 => Pageable pageable = PageRequest.of(0, 5, Sort.by("name").ascending());
+  @Query("""
+          SELECT d FROM Department d 
+          WHERE (:keyword IS NULL OR d.name LIKE %:keyword% OR d.description LIKE %:keyword%)
+          AND (
+              :lastValue IS NULL OR 
+              (:sortField = 'name' AND (d.name > :lastValue OR (d.name = :lastValue AND d.id > :lastId))) OR
+              (:sortField = 'establishedDate' AND (d.establishedDate > CAST(:lastValue AS java.time.LocalDateTime) OR 
+                    (d.establishedDate = CAST(:lastValue AS java.time.LocalDateTime) AND d.id > :lastId)))
+          )
+      """)
+  List<Department> searchByKeywordWithCursor(@Param("keyword") String keyword,
+      @Param("lastValue") String lastValue, // 정렬 컬럼 마지막 값
+      @Param("lastId") Long lastId,         // 마지막 id
+      @Param("sortField") String sortField, // 'name' 또는 'establishedDate'
+      Pageable pageable);
 }
