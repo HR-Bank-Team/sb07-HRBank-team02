@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -31,7 +30,7 @@ public class Backup extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false, length = 100)
-    private Status status; // 백업 상태 (예: SUCCESS, FAILURE)
+    private BackupStatus status; // 백업 상태 (예: SUCCESS, FAILURE)
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(
