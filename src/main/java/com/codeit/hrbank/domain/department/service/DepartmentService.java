@@ -27,7 +27,7 @@ public class DepartmentService {
     if(departmentRepository.existsByName(request.name())){
       throw new IllegalStateException("중복된 부서명입니다.");
     }
-    Department department = new Department(request.name(), request.description(), LocalDateTime.now());
+    Department department = departmentMapper.toEntity(request);
     return departmentMapper.toDto(departmentRepository.save(department));
   }
   
