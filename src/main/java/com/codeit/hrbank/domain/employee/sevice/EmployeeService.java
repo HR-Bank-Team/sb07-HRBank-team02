@@ -1,16 +1,21 @@
 package com.codeit.hrbank.domain.employee.sevice;
 
 import com.codeit.hrbank.domain.department.entity.Department;
+import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
+import com.codeit.hrbank.domain.employee.dto.EmployeeCreateRequest;
+import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
+import com.codeit.hrbank.domain.employee.dto.EmployeeUpdateRequest;
 import com.codeit.hrbank.domain.employee.entity.Employee;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
+import com.codeit.hrbank.domain.employee.mapper.EmployeeMapper;
 import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import com.codeit.hrbank.domain.file.entity.File;
+import com.codeit.hrbank.domain.file.repository.FileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +30,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final FileRepository fileRepository;
 
-    private final FileStorage fileStorage;
+    private final EmployeeMapper employeeMapper;
 
     // 직원 등록
     // 메모 관련 수정 이력 로직 추가 필요
@@ -37,7 +42,8 @@ public class EmployeeService {
         }
 
         // 부서 정보 불러오기
-        Department department = departmentRepository.findById(request.departmentId());
+        Department department = departmentRepository.findById(request.departmentId())
+                .orElseThrow(() -> new NoSuchElementException("부서가 존재하지 않습니다."));
 
         // 사번 정보 생성
         int year = LocalDate.now().getYear();
@@ -54,11 +60,7 @@ public class EmployeeService {
                     file.getSize()
             );
 
-            try {
-                fileStorage.put(profile.getId(), file.getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            // fileStorage 저장 코드 추가 필요
         }
 
         Employee newEmployee = new Employee(
@@ -98,7 +100,7 @@ public class EmployeeService {
         String position = request.position();
         String email = request.email();
         LocalDateTime hireDate = request.hireDate();
-        EmployeeStatus employeeStatus = EmployeeStatus.valueOf(request.status());
+        EmployeeStatus employeeStatus = request.status();
 
         // 이메일 검증 로직 필요한가?
 
@@ -111,7 +113,6 @@ public class EmployeeService {
         File profile = null;
 
         // 프로필 이미지 정보 생성
-        // 파일 request DTO 생성시 변경 예정
         if(file != null) {
             profile = new File(
                     file.getOriginalFilename(),
@@ -119,16 +120,9 @@ public class EmployeeService {
                     file.getSize()
             );
 
-            // 기존 프로필 이미지 삭제(있는 경우)
-            if (employee.getProfile() != null) {
-                fileRepository.deleteById(employee.getProfile().getId());
-            }
+            // 기존 프로필 이미지 삭제 코드 필요
+            // 새로운 프로필 이미지 저장 코드 필요
 
-            try {
-                fileStorage.put(profile.getId(), file.getBytes()); // 새로운 프로필 이미지 저장
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
             fileRepository.save(profile); // 새로운 프로필 이미지 정보 저장
         }
 
