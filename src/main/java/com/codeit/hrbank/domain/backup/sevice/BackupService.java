@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public interface BackupService {
 
     CursorPageResponseBackupDto getBackupList(CursorBackupRequestDto cursorBackupRequestDto);
-    BackupDto createBackup(HttpServletRequest request);
+    BackupDto createBackup(HttpServletRequest request) throws Exception;
     BackupDto getLatestBackup();
 
 }

@@ -38,4 +38,11 @@ public class Backup extends BaseEntity {
             unique = true
     )
     private File file;
+
+    public Backup backupComplete(File file){
+        this.endedAt = LocalDateTime.now();
+        this.file = file;
+        this.status = BackupStatus.COMPLETED;
+        return this;
+    }
 }
