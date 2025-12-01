@@ -30,23 +30,14 @@ public class BackupServicei implements BackupService{
 
     @Override
     public BackupDto createBackup(HttpServletRequest request) {
-
-
-
         return null;
     }
-
     @Override
     public BackupDto getLatestBackup() {
         return null;
     }
-
     private boolean isNecessaryBackup(LocalDateTime changeLogTime) {
         return changeLogTime.isAfter(backupScheduler.getRecentBackupTime());
     }
 
-
-    private void registerBackup(ChangeLog changeLog) {
-
-    }
 }
