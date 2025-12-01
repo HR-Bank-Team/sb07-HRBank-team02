@@ -1,6 +1,7 @@
 package com.codeit.hrbank.domain.department.service;
 
 import com.codeit.hrbank.domain.department.dto.CursorPageRequestDepartmentDto;
+import com.codeit.hrbank.domain.department.dto.CursorPageResponseDepartmentDto;
 import com.codeit.hrbank.domain.department.dto.DepartmentCreateRequest;
 import com.codeit.hrbank.domain.department.dto.DepartmentDto;
 import com.codeit.hrbank.domain.department.entity.Department;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +32,7 @@ public class DepartmentService {
   }
   
   //부서 목록 조회
-  public Slice<DepartmentDto> getAllDepartments(CursorPageRequestDepartmentDto request){
+  public CursorPageResponseDepartmentDto getAllDepartments(CursorPageRequestDepartmentDto request){
     validateSortField(request.sortField());
 
     // Pageable + 기본 tie-breaker
@@ -52,10 +52,34 @@ public class DepartmentService {
       pageable
     );
 
-    List<DepartmentDto> departmentDtoList =
+    List<DepartmentDto> content =
         departmentSlice.stream().map(departmentMapper::toDto).toList();
 
-    return new SliceImpl<>(departmentDtoList, pageable, departmentSlice.hasNext());
+    // nextCursor, nextIdAfter 계산
+    String nextCursor = null;
+    Long nextIdAfter = null;
+
+    if (departmentSlice.hasNext() && !content.isEmpty()) {
+      DepartmentDto last = content.get(content.size() - 1);
+
+      // 커서 스트링은 정렬 필드 값으로 생성한다고 가정
+      nextCursor = switch (request.sortField()) {
+        case "name" -> last.name();
+        case "establishedDate" -> last.establishedDate().toString();
+        default -> last.id().toString();  // 혹시 모를 fallback
+      };
+
+      nextIdAfter = last.id();
+    }
+
+    return new CursorPageResponseDepartmentDto(
+        content,
+        nextCursor,
+        nextIdAfter,
+        request.size(),
+        (long) content.size(),       // totalElements (cursor 방식에서는 보통 count 안함)
+        departmentSlice.hasNext()
+    );
   }
 
   // 정렬 필드 검증 메서드 분리
