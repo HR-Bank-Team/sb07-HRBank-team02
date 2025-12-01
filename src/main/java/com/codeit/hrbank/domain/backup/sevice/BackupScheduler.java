@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 @Service
 public class BackupScheduler {
 
-    private LocalDateTime lastBackupTime;
+    private LocalDateTime latestBackupTime;
 
-    public LocalDateTime getRecentBackupTime() {
-        return lastBackupTime;
+    public LocalDateTime getLatestBackupTime() {
+        return latestBackupTime;
     }
 }
