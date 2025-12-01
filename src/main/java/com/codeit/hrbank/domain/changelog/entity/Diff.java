@@ -8,11 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table
+@Table(name = "diffs")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChangeLogDetail extends BaseEntity {
+public class Diff extends BaseEntity {
 
     @Column(name ="property_name", nullable = false, length = 100)
     private String propertyName;
