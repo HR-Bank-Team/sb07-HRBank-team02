@@ -5,6 +5,7 @@ import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.dto.response.CursorPageResponseBackupDto;
 import com.codeit.hrbank.domain.backup.sevice.BackupService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class BackupController {
     private final BackupService backupService;
 
     @GetMapping("")
-    public ResponseEntity<CursorPageResponseBackupDto> getBackupPage(@RequestBody CursorBackupRequestDto cursorBackupRequestDto){
+    public ResponseEntity<CursorPageResponseBackupDto> getBackupPage(@Valid @RequestBody CursorBackupRequestDto cursorBackupRequestDto){
         return null;
     }
 
@@ -32,6 +33,7 @@ public class BackupController {
 
         @GetMapping("/latest")
     public ResponseEntity<BackupDto> getLatestBackup(){
-        return null;
+        BackupDto backup = backupService.getLatestBackup();
+        return new ResponseEntity<>(backup, HttpStatus.OK);
         }
 }

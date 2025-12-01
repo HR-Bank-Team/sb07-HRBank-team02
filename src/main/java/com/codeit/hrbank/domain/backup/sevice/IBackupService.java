@@ -4,7 +4,6 @@ import com.codeit.hrbank.domain.backup.dto.request.CursorBackupRequestDto;
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.dto.response.CursorPageResponseBackupDto;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
-import com.codeit.hrbank.domain.changelog.entity.ChangeLog;
 
 import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,8 +14,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class BackupServicei implements BackupService{
-
+public class IBackupService implements BackupService{
 
     private final BackupRepository backupRepository;
     private final BackupScheduler backupScheduler;

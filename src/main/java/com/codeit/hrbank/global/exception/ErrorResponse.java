@@ -1,10 +1,8 @@
-package com.codeit.hrbank.domain.backup.dto.response;
-
-import org.springframework.http.HttpStatus;
+package com.codeit.hrbank.global.exception;
 
 import java.time.LocalDateTime;
 
-public record ErrorDto(
+public record ErrorResponse(
 
         LocalDateTime timestamp,
         Long status,
