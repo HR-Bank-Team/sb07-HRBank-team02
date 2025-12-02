@@ -7,11 +7,11 @@ import java.io.InputStream;
 @Component
 public class FileStorage {
 
-    Long put(byte[] bytes){
+    public Long put(byte[] bytes){
         return null;
     }
 
-    InputStream get(Long id){
+    public InputStream get(Long id){
         return null;
     }
 
