@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+//직원 수 / 분포 조회용 DTO
+import com.codeit.hrbank.domain.employee.dto.EmployeeCountDto;
+import com.codeit.hrbank.domain.employee.dto.EmployeeDistributionDto;
+
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
@@ -145,5 +149,59 @@ public class EmployeeService {
         }
 
         employeeRepository.deleteById(EmployeeId);
+    }
+
+
+    // ======= 추가 사항 ========
+    //직원 수 조회
+    public EmployeeCountDto getEmployeeCount(
+            EmployeeStatus status,
+            LocalDateTime fromDate,
+            LocalDateTime toDate
+    ) {
+        long count = employeeRepository.countByStatusAndHireDateBetween(
+                status,
+                fromDate,
+                toDate
+        );
+        return new EmployeeCountDto(count);
+    }
+    //직원 분포 조회
+    public List<EmployeeDistributionDto> getEmployeeDistribution(
+            String groupBy,
+            EmployeeStatus status
+    ) {
+        String criteria = (groupBy == null || groupBy.isBlank())
+                ? "department"
+                : groupBy;
+
+        EmployeeStatus effectiveStatus = (status == null)
+                ? EmployeeStatus.ACTIVE
+                : status;
+
+        List<EmployeeRepository.EmployeeGroupCount> stats;
+
+        switch (criteria) {
+            case "department" ->
+                    stats = employeeRepository.countGroupByDepartment(effectiveStatus);
+            case "position" ->
+                    stats = employeeRepository.countGroupByPosition(effectiveStatus);
+            default ->
+                    throw new IllegalArgumentException("지원하지 않는 그룹화 입니다. groupBy=" + criteria);
+        }
+
+        long total = stats.stream()
+                .mapToLong(EmployeeRepository.EmployeeGroupCount::getCount)
+                .sum();
+
+        return stats.stream()
+                .map(s -> new EmployeeDistributionDto(
+                        s.getGroupKey(),
+                        s.getCount(),
+                        total > 0
+                                ? (double) s.getCount() * 100.0 / total
+                                : 0.0
+                ))
+                .toList();
     }
 }
