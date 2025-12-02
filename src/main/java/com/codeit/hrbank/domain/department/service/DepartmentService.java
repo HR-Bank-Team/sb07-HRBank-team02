@@ -6,6 +6,7 @@ import com.codeit.hrbank.domain.department.mapper.DepartmentMapper;
 import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -44,21 +45,42 @@ public class DepartmentService {
     public CursorPageResponseDepartmentDto getAllDepartments(CursorPageRequestDepartmentDto request) {
         validateSortField(request.sortField());
 
+        // Pageable + 기본 tie-breaker
+        Pageable pageable = PageRequest.of(0, request.size(),
+                Sort.by(request.sortDirection(), request.sortField())
+                        .and(Sort.by(request.sortDirection(), "id")));
+
+        // cursor 값 그대로 사용
+        String cursorValue = request.cursor();
+
+        // repository 호출
         Slice<Department> departmentSlice = departmentRepository.searchByKeywordWithCursor(
-            request.nameOrDescription(),
-            request.cursor(),
-            request.idAfter(),
-            request.sortField(),
-            PageRequest.of(0, request.size(),
-                Sort.by(request.sortDirection(),request.sortField()).and(Sort.by(request.sortDirection(),"id"))
-            )
+                request.nameOrDescription(),
+                cursorValue,
+                request.idAfter(),
+                request.sortField(),
+                pageable
         );
 
-        List<DepartmentDto> content = departmentSlice.stream().map(departmentMapper::toDto).toList();
+        List<DepartmentDto> content =
+                departmentSlice.stream().map(departmentMapper::toDto).toList();
 
-        NextCursorInfo info = computeNextCursor(request, content, departmentSlice);
-        String nextCursor = info.nextCursor();
-        Long nextIdAfter = info.nextIdAfter();
+        // nextCursor, nextIdAfter 계산
+        String nextCursor = null;
+        Long nextIdAfter = null;
+
+        if (departmentSlice.hasNext() && !content.isEmpty()) {
+            DepartmentDto last = content.get(content.size() - 1);
+
+            // 커서 스트링은 정렬 필드 값으로 생성한다고 가정
+            nextCursor = switch (request.sortField()) {
+                case "name" -> last.name();
+                case "establishedDate" -> last.establishedDate().toString();
+                default -> last.id().toString();  // 혹시 모를 fallback
+            };
+
+            nextIdAfter = last.id();
+        }
 
         return new CursorPageResponseDepartmentDto(
                 content,
@@ -69,23 +91,6 @@ public class DepartmentService {
                 departmentSlice.hasNext()
         );
     }
-
-    //다음 커서와 다음 id 계산
-    private NextCursorInfo computeNextCursor(
-            CursorPageRequestDepartmentDto request,
-            List<DepartmentDto> content,
-            Slice<Department> slice
-    ) {
-        if (!slice.hasNext() || content.isEmpty()) {
-            return new NextCursorInfo(null, null);
-        }
-        DepartmentDto last = content.get(content.size() - 1);
-        String nextCursor = request.sortField().equals("name")
-                        ? last.name()
-                        : last.establishedDate().toString();
-        return new NextCursorInfo(nextCursor, last.id());
-    }
-
 
     @Transactional
     public void deleteDepartment(Long departmentId) {
