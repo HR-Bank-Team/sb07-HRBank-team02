@@ -34,7 +34,7 @@ public class TestFixture {
                 randomString(),
                 randomString(),
                 randomString(),
-                LocalDate.now(),
+                LocalDate.from(randomLocalDateTime()),
                 randomString(),
                 randomEnumType(EmployeeStatus.class),
                 null,
