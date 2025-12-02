@@ -3,7 +3,6 @@ package com.codeit.hrbank.domain.department.mapper;
 import com.codeit.hrbank.domain.department.dto.DepartmentCreateRequest;
 import com.codeit.hrbank.domain.department.dto.DepartmentDto;
 import com.codeit.hrbank.domain.department.entity.Department;
-import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,15 +18,15 @@ public class DepartmentMapper {
         return new DepartmentDto(department.getId(),
                 department.getName(),
                 department.getDescription(),
-                department.getEstablishedDate().toLocalDate(),
+                department.getEstablishedDate(),
                 totalEmployeeNumber);
     }
 
     public Department toEntity(DepartmentCreateRequest departmentCreateRequest) {
-            return new Department(
-                    departmentCreateRequest.name(),
-                    departmentCreateRequest.description(),
-                    departmentCreateRequest.establishDate().atStartOfDay()
-                    );
+        return new Department(
+                departmentCreateRequest.name(),
+                departmentCreateRequest.description(),
+                departmentCreateRequest.establishDate()
+        );
     }
 }
