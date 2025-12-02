@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Table(name = "employees")
 @Getter
@@ -29,7 +29,7 @@ public class Employee extends BaseUpdatableEntity {
     private String email;
 
     @Column(name = "hire_date", nullable = false)
-    private LocalDateTime hireDate;
+    private LocalDate hireDate;
 
 
     @Column(name = "employee_number", nullable = false, unique = true)
@@ -48,7 +48,7 @@ public class Employee extends BaseUpdatableEntity {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    public void update(String name, String position, String email, LocalDateTime hireDate, EmployeeStatus status, File profile, Department department) {
+    public void update(String name, String position, String email, LocalDate hireDate, EmployeeStatus status, File profile, Department department) {
         if(name != null && !name.equals(this.name)) {
             this.name = name;
         }
