@@ -27,10 +27,11 @@ public class IBackupService implements BackupService{
 
     private final BackupRepository backupRepository;
     private final BackupScheduler backupScheduler;
-    private final ChangeLogRepository changeLogRepository;
     private final BackupMapper backupMapper;
     private final BackupRegister backupRegister;
     private final CursorPageBackupMapper cursorPageBackupMapper;
+
+
 
     @Override
     public CursorPageResponseBackupDto getBackupList(CursorBackupRequestDto cursorBackupRequestDto) {
@@ -67,33 +68,15 @@ public class IBackupService implements BackupService{
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
     public BackupDto createBackup(HttpServletRequest request) throws Exception {
-        String ip = request.getRemoteAddr();
-        LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
-        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
-
-        if(!isNecessaryBackup(latestChangeTime)){
-            Backup backup = backupRepository.save(
-                    new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
-            return backupMapper.toDto(backup);
-        }
-        Backup backup = backupRepository.save(
-                new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
-        );
-        Long backupId = backup.getId();
-        backupRegister.afterRegister(backup);
-        backup = backupRepository.findById(backupId).orElseThrow();
-        return backupMapper.toDto(backup);
+        return backupRegister.createBackup(request);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BackupDto getLatestBackup() {
     Backup latestBackup = backupRepository.getLatestBackup();
     return backupMapper.toDto(latestBackup);
-    }
-    private boolean isNecessaryBackup(LocalDateTime changeLogTime) {
-        return changeLogTime.isAfter(backupScheduler.getLatestBackupTime());
     }
 
     private List<Backup> retainCommon(List<Backup> backupList1, List<Backup> backupList2) {

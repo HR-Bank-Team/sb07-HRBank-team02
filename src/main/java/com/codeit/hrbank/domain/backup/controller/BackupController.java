@@ -31,7 +31,7 @@ public class BackupController {
                                                                      @RequestParam(required = false) String sortDirection,
                                                                      @RequestParam(required = false) String sortField,
                                                                      @RequestParam(required = false) Long size
-    ){
+    ,HttpServletRequest request){
         CursorBackupRequestDto dto = new CursorBackupRequestDto(
                 worker, status, startedAtFrom,startedAtTo,sortDirection, sortField , size
         );
@@ -48,7 +48,7 @@ public class BackupController {
     }
 
         @GetMapping("/latest")
-    public ResponseEntity<BackupDto> getLatestBackup(){
+    public ResponseEntity<BackupDto> getLatestBackup(HttpServletRequest request){
         BackupDto backup = backupService.getLatestBackup();
         return new ResponseEntity<>(backup, HttpStatus.OK);
         }
