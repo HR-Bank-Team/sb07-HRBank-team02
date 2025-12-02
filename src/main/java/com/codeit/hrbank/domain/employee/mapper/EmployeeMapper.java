@@ -14,6 +14,10 @@ public class EmployeeMapper {
     public EmployeeDto toDto(Employee employee) {
         Department department = employee.getDepartment();
 
+        // 프로필이 없는 경우 null 저장
+        Long profileId = employee.getProfile() != null ? employee.getProfile().getId() : null;
+
+
         return new EmployeeDto(
                 employee.getId(),
                 employee.getName(),
@@ -24,7 +28,7 @@ public class EmployeeMapper {
                 employee.getPosition(),
                 employee.getHireDate(),
                 employee.getStatus(),
-                employee.getProfile().getId()
+                profileId
         );
     }
 
@@ -32,6 +36,9 @@ public class EmployeeMapper {
         return employees.stream()
                 .map(employee -> {
                     Department department = employee.getDepartment();
+
+                    // 프로필이 없는 경우 null 저장
+                    Long profileId = employee.getProfile() != null ? employee.getProfile().getId() : null;
 
                     return new EmployeeDto(
                             employee.getId(),
@@ -43,7 +50,7 @@ public class EmployeeMapper {
                             employee.getPosition(),
                             employee.getHireDate(),
                             employee.getStatus(),
-                            employee.getProfile().getId()
+                            profileId
                     );
                 })
                 .toList();

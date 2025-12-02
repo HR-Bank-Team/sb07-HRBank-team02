@@ -1,8 +1,6 @@
 package com.codeit.hrbank.domain.employee.controller;
 
-import com.codeit.hrbank.domain.employee.dto.EmployeeCreateRequest;
-import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
-import com.codeit.hrbank.domain.employee.dto.EmployeeUpdateRequest;
+import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,7 +22,7 @@ public class EmployeeController {
     // 직원 전체 조회
     @GetMapping
     public ResponseEntity<List<EmployeeDto>> getAllEmployee() {
-        List<EmployeeResponse> responses = employeeService.getAllEmployee();
+        List<EmployeeDto> responses = employeeService.getAllEmployee();
         return ResponseEntity.ok(responses); // 200 OK
     }
 
@@ -53,7 +52,7 @@ public class EmployeeController {
             @RequestPart("employee") EmployeeUpdateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        EmployeeResponse response = employeeService.updateEmployee(id, request, file);
+        EmployeeDto response = employeeService.updateEmployee(id, request, file);
         return ResponseEntity.ok(response); // 200 OK
     }
 
@@ -62,5 +61,13 @@ public class EmployeeController {
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
+    @GetMapping("/stats/trend")
+    public ResponseEntity<List<EmployeeTrendDto>> trendEmployee(
+            @ModelAttribute EmployeeTrendRequest employeeTrendRequest
+    ) {
+        List<EmployeeTrendDto> employeeTrend = employeeService.getEmployeeTrend(employeeTrendRequest);
+        return ResponseEntity.ok(employeeTrend);
     }
 }

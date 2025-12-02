@@ -21,7 +21,7 @@ CREATE TABLE employees (
                            name VARCHAR(100) NOT NULL,
                            email VARCHAR(100) NOT NULL UNIQUE,
                            position VARCHAR(100) NOT NULL,
-                           hire_date TIMESTAMP NOT NULL,
+                           hire_date DATE NOT NULL,
                            employee_number VARCHAR(255) NOT NULL UNIQUE,
                            status VARCHAR(100) NOT NULL DEFAULT 'ACTIVE',
                            created_at TIMESTAMP NOT NULL,
