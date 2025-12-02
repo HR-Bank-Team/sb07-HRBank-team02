@@ -8,6 +8,7 @@ import com.codeit.hrbank.domain.changelog.entity.ChangeLog;
 import com.codeit.hrbank.domain.changelog.entity.ChangeLogType;
 import com.codeit.hrbank.domain.changelog.entity.Diff;
 import com.codeit.hrbank.domain.changelog.mapper.ChangeLogMapper;
+import com.codeit.hrbank.domain.changelog.mapper.DiffMapper;
 import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
 import com.codeit.hrbank.domain.changelog.repository.DiffRepository;
 import com.codeit.hrbank.domain.employee.entity.Employee;
@@ -103,7 +104,7 @@ public class ChangeLogService {
             nextIdAfter = last.getId();
         }
 
-        Long totalElements = changeLogRepository.countChangeLogs(
+        Long totalElements = changeLogRepository.countChangeLogsByFilter(
                 request.getEmployeeNumber(),
                 request.getMemo(),
                 request.getIpAddress(),
@@ -117,6 +118,23 @@ public class ChangeLogService {
         return new CursorPageResponseChangeLogDto(list, nextCursor, nextIdAfter, list.size(), totalElements, hasNext);
 
 
+    }
+
+    public List<DiffDto> getDiffsByChannelLogId(Long ChannelLogId){
+        List<Diff> byChangeLogId = diffRepository.findByChangeLogId(ChannelLogId);
+        return byChangeLogId.stream().map(DiffMapper::toDto).toList();
+    }
+
+    public Long countChangeLogsBetween(
+            LocalDateTime fromDate,
+            LocalDateTime toDate){
+        if(fromDate==null){
+            fromDate = LocalDateTime.now().minusDays(7);
+        }
+        if(toDate==null){
+            toDate=LocalDateTime.now();
+        }
+        return changeLogRepository.countByAtBetween(fromDate,toDate);
     }
 
 
@@ -134,12 +152,12 @@ public class ChangeLogService {
 
     private List<Diff> extractDetailsByDelete(Employee employee, ChangeLog changeLog) {
         List<Diff> result = new ArrayList<>();
-        result.add(new Diff("입사일", null, employee.getHireDate().toString(), changeLog));
-        result.add(new Diff("이름", null, employee.getName(), changeLog));
-        result.add(new Diff("직함", null, employee.getPosition(), changeLog));
-        result.add(new Diff("부서명", null, employee.getDepartment().getName(), changeLog));
-        result.add(new Diff("이메일", null, employee.getEmail(), changeLog));
-        result.add(new Diff("상태", null, employee.getStatus().toString(), changeLog));
+        result.add(new Diff("입사일",  employee.getHireDate().toString(),null, changeLog));
+        result.add(new Diff("이름",  employee.getName(),null, changeLog));
+        result.add(new Diff("직함",  employee.getPosition(),null, changeLog));
+        result.add(new Diff("부서명",  employee.getDepartment().getName(),null, changeLog));
+        result.add(new Diff("이메일",  employee.getEmail(),null, changeLog));
+        result.add(new Diff("상태",  employee.getStatus().toString(),null, changeLog));
         return result;
     }
 }
