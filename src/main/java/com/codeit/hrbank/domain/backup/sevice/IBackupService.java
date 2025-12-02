@@ -70,16 +70,19 @@ public class IBackupService implements BackupService{
     @Transactional(propagation = Propagation.REQUIRED)
     public BackupDto createBackup(HttpServletRequest request) throws Exception {
         String ip = request.getRemoteAddr();
-        LocalDateTime latestChangeTime = changeLogRepository.findLatestChangeTime();
+        LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
+        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
+
         if(!isNecessaryBackup(latestChangeTime)){
-            Backup backup = new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null);
+            Backup backup = backupRepository.save(
+                    new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
             return backupMapper.toDto(backup);
         }
         Backup backup = backupRepository.save(
                 new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
         );
         Long backupId = backup.getId();
-        backupRegister.afterRegister(backupId);
+        backupRegister.afterRegister(backup);
         backup = backupRepository.findById(backupId).orElseThrow();
         return backupMapper.toDto(backup);
     }
@@ -106,9 +109,9 @@ public class IBackupService implements BackupService{
         Set<Backup> backupSet = new HashSet<>(backupList1);
         backupSet.retainAll(backupList2);
         return backupSet.stream().toList();
-
-
     }
+
+
 
 
 

@@ -1,6 +1,8 @@
 package com.codeit.hrbank.domain.backup.sevice;
 
+import com.codeit.hrbank.domain.backup.dto.export.ExportEmployeeDto;
 import com.codeit.hrbank.domain.backup.entity.Backup;
+import com.codeit.hrbank.domain.backup.mapper.ExportEmployeeMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
 import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
 import com.codeit.hrbank.domain.employee.mapper.EmployeeMapper;
@@ -25,32 +27,19 @@ public class BackupRegister {
     private final FileStorage fileStorage;
     private final FileRepository fileRepository;
     private final EmployeeRepository employeeRepository;
-    private final EmployeeMapper employeeMapper;
+    private final ExportEmployeeMapper exportEmployeeMapper;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected Backup afterRegister(Long backupId) throws Exception {
-        fileStorage.put(DtoToByteArray());
-        File file = fileRepository.save(new File("name", "csv", 100L
+    @Transactional
+    protected Backup afterRegister(Backup backup) throws Exception {
+
+        String fileName = backup.getStartedAt().toString().replace(":", "-") + ".csv";
+        File file = fileRepository.save(new File(fileName, "csv", 100L
                 )
         );
-        Backup backup = backupRepository.findById(backupId).orElseThrow();
+        List<ExportEmployeeDto> employeeDtos = employeeRepository.findAll().stream().map(exportEmployeeMapper::toDto).toList();
+        fileStorage.putCsv(fileName, employeeDtos);
         backup.backupComplete(file);
         return backupRepository.save(backup);
     }
 
-    private byte[] DtoToByteArray() throws Exception{
-
-        List<EmployeeDto> employeeDtos = employeeRepository.findAll().stream().map(employeeMapper::toDto).toList();
-        if(employeeDtos == null || employeeDtos.isEmpty()) return null;
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(employeeDtos);
-        objectOutputStream.flush();
-
-        byte[] resultBytes = outputStream.toByteArray();
-        objectOutputStream.close();
-        outputStream.close();
-
-        return resultBytes;
-    }
 }

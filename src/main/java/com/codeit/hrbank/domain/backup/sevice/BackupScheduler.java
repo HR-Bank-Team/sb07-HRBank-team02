@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Service
 public class BackupScheduler {
 
-    private LocalDateTime latestBackupTime;
+    private LocalDateTime latestBackupTime = LocalDateTime.now();
 
     public LocalDateTime getLatestBackupTime() {
         return latestBackupTime;
