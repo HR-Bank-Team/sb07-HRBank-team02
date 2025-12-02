@@ -46,7 +46,7 @@ public class IBackupService implements BackupService{
         Slice<Backup> backupSlice = backupRepository.getBackupSlice(worker, status, start,
                 end, sortDirection, sortField, size);
 
-        Object nextCursor =  backupSlice.isEmpty()
+        LocalDateTime nextCursor =  backupSlice.isEmpty()
                 ? LocalDateTime.now()
                 : backupSlice.getContent().
                 get(backupSlice.getContent().size()-1).getStartedAt();;
