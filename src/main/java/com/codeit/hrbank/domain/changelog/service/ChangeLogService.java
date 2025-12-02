@@ -8,6 +8,7 @@ import com.codeit.hrbank.domain.changelog.entity.ChangeLog;
 import com.codeit.hrbank.domain.changelog.entity.ChangeLogType;
 import com.codeit.hrbank.domain.changelog.entity.Diff;
 import com.codeit.hrbank.domain.changelog.mapper.ChangeLogMapper;
+import com.codeit.hrbank.domain.changelog.mapper.DiffMapper;
 import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
 import com.codeit.hrbank.domain.changelog.repository.DiffRepository;
 import com.codeit.hrbank.domain.employee.entity.Employee;
@@ -103,7 +104,7 @@ public class ChangeLogService {
             nextIdAfter = last.getId();
         }
 
-        Long totalElements = changeLogRepository.countChangeLogs(
+        Long totalElements = changeLogRepository.countChangeLogsByFilter(
                 request.getEmployeeNumber(),
                 request.getMemo(),
                 request.getIpAddress(),
@@ -117,6 +118,23 @@ public class ChangeLogService {
         return new CursorPageResponseChangeLogDto(list, nextCursor, nextIdAfter, list.size(), totalElements, hasNext);
 
 
+    }
+
+    public List<DiffDto> getDiffsByChannelLogId(Long ChannelLogId){
+        List<Diff> byChangeLogId = diffRepository.findByChangeLogId(ChannelLogId);
+        return byChangeLogId.stream().map(DiffMapper::toDto).toList();
+    }
+
+    public Long countChangeLogsBetween(
+            LocalDateTime fromDate,
+            LocalDateTime toDate){
+        if(fromDate==null){
+            fromDate = LocalDateTime.now().minusDays(7);
+        }
+        if(toDate==null){
+            toDate=LocalDateTime.now();
+        }
+        return changeLogRepository.countByAtBetween(fromDate,toDate);
     }
 
 
