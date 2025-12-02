@@ -1,10 +1,8 @@
-package com.codeit.hrbank.domain.employee.sevice;
+package com.codeit.hrbank.domain.employee.service;
 
 import com.codeit.hrbank.domain.department.entity.Department;
 import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
-import com.codeit.hrbank.domain.employee.dto.EmployeeCreateRequest;
-import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
-import com.codeit.hrbank.domain.employee.dto.EmployeeUpdateRequest;
+import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.entity.Employee;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
 import com.codeit.hrbank.domain.employee.mapper.EmployeeMapper;
@@ -17,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -99,7 +97,7 @@ public class EmployeeService {
         String name = request.name();
         String position = request.position();
         String email = request.email();
-        LocalDateTime hireDate = request.hireDate();
+        LocalDate hireDate = request.hireDate();
         EmployeeStatus employeeStatus = request.status();
 
         // 이메일 검증 로직 필요한가?
@@ -145,5 +143,84 @@ public class EmployeeService {
         }
 
         employeeRepository.deleteById(EmployeeId);
+    }
+
+    @Transactional
+    public List<EmployeeTrendDto> getEmployeeTrend(EmployeeTrendRequest request) {
+        // from(시작 일시) : (기본값: 현재로부터 unit 기준 12개 이전)
+        // to(종료 일시) : (기본값: 현재)
+        // unit(시간 단위) : (day, week, month, quarter, year, 기본값: month)
+
+
+        LocalDate from = request.from();
+        LocalDate to = request.to() != null ? request.to() : LocalDate.now(); // 종료 일시가 없는 경우 현재 날짜로 저장
+
+        // 시작 일시가 없는 경우 종료 일시를 기준으로 12개 이전 일시로 저장
+        if(from == null){
+            switch(request.unit()){
+                case day -> from = to.minusDays(12);
+                case week -> from = to.minusWeeks(12);
+                case month -> from = to.minusMonths(12);
+                case quarter -> from = to.minusMonths(36);
+                case year -> from = to.minusYears(12);
+            }
+        }
+
+        List<EmployeeTrendDto> result = new ArrayList<>();
+        LocalDate targetDate = from;
+
+        // 시작 일시가 종료 일시보다 이전인 경우 쿼리문 실행
+        if(from.isBefore(to)){
+            // 종료 일시까지만 쿼리문 실행
+            while(!targetDate.isAfter(to)){
+                int count = employeeRepository.findEmployeeTrend(targetDate);
+
+                EmployeeTrendDto employeeTrend = getEmployeeTrendDto(result, targetDate, count);
+
+                result.add(employeeTrend);
+
+                switch(request.unit()){
+                    case day -> targetDate = targetDate.plusDays(1);
+                    case week -> targetDate = targetDate.plusWeeks(1);
+                    case month -> targetDate = targetDate.plusMonths(1);
+                    case quarter -> targetDate = targetDate.plusMonths(3);
+                    case year -> targetDate = targetDate.plusYears(1);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private EmployeeTrendDto getEmployeeTrendDto(List<EmployeeTrendDto> result, LocalDate targetDate, int count) {
+        EmployeeTrendDto employeeTrend;
+
+        // 첫 데이터의 경우 증감 비교 대상이 없으므로 0으로 저장
+        if(result.isEmpty()) {
+            employeeTrend = new EmployeeTrendDto(
+                    targetDate,
+                    count,
+                    0,
+                    0.0
+                    );
+        }
+        else {
+            int beforeCount = result.get(result.size() - 1).count();
+            int change = count - beforeCount;
+            double changeRate = 0.0;
+
+            // 이전 직원 수가 0명이 아닐 때만 증감률 계산
+            if(beforeCount != 0) {
+                changeRate = (double) change / beforeCount * 100;
+                changeRate = Math.round(changeRate * 100) / 100.0;
+            }
+            employeeTrend = new EmployeeTrendDto(
+                    targetDate,
+                    count,
+                    change,
+                    changeRate
+                    );
+        }
+        return employeeTrend;
     }
 }

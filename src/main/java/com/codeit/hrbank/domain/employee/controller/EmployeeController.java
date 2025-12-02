@@ -3,7 +3,7 @@ package com.codeit.hrbank.domain.employee.controller;
 import com.codeit.hrbank.domain.employee.dto.EmployeeCreateRequest;
 import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
 import com.codeit.hrbank.domain.employee.dto.EmployeeUpdateRequest;
-import com.codeit.hrbank.domain.employee.sevice.EmployeeService;
+import com.codeit.hrbank.domain.employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
