@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class TestFixture {
                 randomString(),
                 randomString(),
                 randomString(),
-                randomLocalDateTime(),
+                LocalDate.now(),
                 randomString(),
                 randomEnumType(EmployeeStatus.class),
                 null,

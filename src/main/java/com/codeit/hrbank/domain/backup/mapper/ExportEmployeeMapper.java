@@ -4,6 +4,8 @@ import com.codeit.hrbank.domain.backup.dto.export.ExportEmployeeDto;
 import com.codeit.hrbank.domain.employee.entity.Employee;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class ExportEmployeeMapper {
 
@@ -16,7 +18,7 @@ public class ExportEmployeeMapper {
                 employee.getDepartment().getId(),
                 employee.getDepartment().getName(),
                 employee.getPosition(),
-                employee.getHireDate(),
+                LocalDateTime.from( employee.getHireDate()),
                 employee.getStatus()
 
         );
