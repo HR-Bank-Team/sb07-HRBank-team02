@@ -1,5 +1,10 @@
 package com.codeit.hrbank.domain.changelog.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.ToString;
+
+@ToString
+@AllArgsConstructor
 public class ChangeLogDto {
     private Long id;
     private String type;

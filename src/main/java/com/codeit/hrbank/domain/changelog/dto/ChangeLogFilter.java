@@ -1,34 +1,30 @@
 package com.codeit.hrbank.domain.changelog.dto;
 
-import com.codeit.hrbank.domain.changelog.entity.ChangeLogType;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 
+import java.time.LocalDateTime;
+
+
 @Getter
+@AllArgsConstructor
 public class ChangeLogFilter {
 
-    // 선택적 필터
-    private ChangeLogType type;   // 로그 타입 필터 (CREATED, UPDATED 등)
+    private String employeeNumber;
+    private String type;   // 로그 타입 필터 (CREATED, UPDATED 등)
     private String memo;          // 메모 내용 필터
-    private String employeeNumber; // 직원 번호 필터
+    private String ipAddress;
 
-    // 정렬/페이징
-    private String sortField = "at";       // 정렬 필드, 기본값: at
-    private String sortDirection = "desc"; // 정렬 방향, 기본값: desc
-    private int size = 30;                 // 조회 개수, 기본값: 30
+    private String sortField;       // 정렬 필드, 기본값: at
+    private String sortDirection;  // 정렬 방향, 기본값: desc-> 최신순
+    private Integer size;           // 조회 개수, 기본값: 30
 
-    // 커서 기반 페이징
-    private String cursor; // 다음 페이지 시작 기준 timestamp (ISO 8601 문자열)
+    private LocalDateTime atFrom;
+    private LocalDateTime atTo;
+
+    private String cursor; // 시간 기준일 땐 time, ip기준일 땐 id
     private Long idAfter;  // 커서와 동일한 at값에서 id 기준으로 다음 페이지 시작
 
-    public ChangeLogFilter(ChangeLogType type, String memo, String employeeNumber, String sortField, String sortDirection, int size, String cursor, Long idAfter) {
-        this.type = type;
-        this.memo = memo;
-        this.employeeNumber = employeeNumber;
-        this.sortField = sortField;
-        this.sortDirection = sortDirection;
-        this.size = size;
-        this.cursor = cursor;
-        this.idAfter = idAfter;
-    }
 }
