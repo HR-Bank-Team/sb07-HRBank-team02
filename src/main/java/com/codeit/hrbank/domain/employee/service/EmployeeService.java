@@ -9,9 +9,9 @@ import com.codeit.hrbank.domain.employee.mapper.EmployeeMapper;
 import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import com.codeit.hrbank.domain.file.entity.File;
 import com.codeit.hrbank.domain.file.repository.FileRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -78,6 +78,7 @@ public class EmployeeService {
     }
 
     // 직원 상세 조회
+    @Transactional(readOnly = true)
     public EmployeeDto getEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
@@ -85,6 +86,7 @@ public class EmployeeService {
     }
 
     // 직원 목록 조회
+    @Transactional(readOnly = true)
     public List<EmployeeDto> getAllEmployee() {
         List<Employee> employees = employeeRepository.findAll();
         return employeeMapper.toDto(employees);
@@ -100,7 +102,10 @@ public class EmployeeService {
         LocalDate hireDate = request.hireDate();
         EmployeeStatus employeeStatus = request.status();
 
-        // 이메일 검증 로직 필요한가?
+        // 이메일 중복 검증
+        if(employeeRepository.existsByEmail(request.email())){
+            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
+        }
 
         Employee employee = employeeRepository.findById(EmployeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
@@ -145,7 +150,7 @@ public class EmployeeService {
         employeeRepository.deleteById(EmployeeId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<EmployeeTrendDto> getEmployeeTrend(EmployeeTrendRequest request) {
         // from(시작 일시) : (기본값: 현재로부터 unit 기준 12개 이전)
         // to(종료 일시) : (기본값: 현재)
