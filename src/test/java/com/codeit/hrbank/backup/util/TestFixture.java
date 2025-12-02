@@ -1,11 +1,10 @@
-package com.codeit.hrbank.global.util;
+package com.codeit.hrbank.backup.util;
 
 import com.codeit.hrbank.domain.changelog.entity.ChangeLog;
 import com.codeit.hrbank.domain.changelog.entity.ChangeLogType;
 import com.codeit.hrbank.domain.department.entity.Department;
 import com.codeit.hrbank.domain.employee.entity.Employee;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
 public class TestFixture {
 
     public ChangeLog changeLogFactory(){
