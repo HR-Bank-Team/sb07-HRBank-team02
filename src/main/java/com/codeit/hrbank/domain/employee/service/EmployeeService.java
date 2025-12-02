@@ -30,35 +30,32 @@ public class EmployeeService {
 
     private final EmployeeMapper employeeMapper;
 
+    // ===========================
     // 직원 등록
-    // 메모 관련 수정 이력 로직 추가 필요
+    // ===========================
     @Transactional
     public EmployeeDto createEmployee(EmployeeCreateRequest request, MultipartFile file) {
         // 이메일 중복 검증
-        if(employeeRepository.existsByEmail(request.email())){
+        if (employeeRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
         }
 
-        // 부서 정보 불러오기
         Department department = departmentRepository.findById(request.departmentId())
                 .orElseThrow(() -> new NoSuchElementException("부서가 존재하지 않습니다."));
 
-        // 사번 정보 생성
         int year = LocalDate.now().getYear();
         String employeeNumber = String.format("EMP-%d-%s", year, UUID.randomUUID());
 
         File profile = null;
 
-        // 프로필 이미지 정보 생성
-        // 파일 request DTO 생성시 변경 예정
-        if(file != null) {
+        if (file != null) {
             profile = new File(
                     file.getOriginalFilename(),
                     file.getContentType(),
                     file.getSize()
             );
 
-            // fileStorage 저장 코드 추가 필요
+            fileRepository.save(profile);
         }
 
         Employee newEmployee = new Employee(
@@ -67,47 +64,46 @@ public class EmployeeService {
                 request.email(),
                 request.hireDate(),
                 employeeNumber,
-                EmployeeStatus.ACTIVE, // 재직중 상태로 초기화
+                EmployeeStatus.ACTIVE,
                 profile,
                 department
         );
 
-        fileRepository.save(profile);
         employeeRepository.save(newEmployee);
         return employeeMapper.toDto(newEmployee);
     }
 
+    // ===========================
     // 직원 상세 조회
+    // ===========================
     @Transactional(readOnly = true)
     public EmployeeDto getEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
+
         return employeeMapper.toDto(employee);
     }
 
-    // 직원 목록 조회
+    // ===========================
+    // 직원 전체 조회
+    // ===========================
     @Transactional(readOnly = true)
     public List<EmployeeDto> getAllEmployee() {
         List<Employee> employees = employeeRepository.findAll();
         return employeeMapper.toDto(employees);
     }
 
-    // 직원 목록 수정
-    // 메모 관련 수정 이력 로직 추가 필요
+    // ===========================
+    // 직원 정보 수정
+    // ===========================
     @Transactional
-    public EmployeeDto updateEmployee(Long EmployeeId, EmployeeUpdateRequest request, MultipartFile file) {
-        String name = request.name();
-        String position = request.position();
-        String email = request.email();
-        LocalDate hireDate = request.hireDate();
-        EmployeeStatus employeeStatus = request.status();
+    public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file) {
 
-        // 이메일 중복 검증
-        if(employeeRepository.existsByEmail(request.email())){
+        if (employeeRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
         }
 
-        Employee employee = employeeRepository.findById(EmployeeId)
+        Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
 
         Department department = departmentRepository.findById(request.departmentId())
@@ -115,54 +111,115 @@ public class EmployeeService {
 
         File profile = null;
 
-        // 프로필 이미지 정보 생성
-        if(file != null) {
+        if (file != null) {
             profile = new File(
                     file.getOriginalFilename(),
                     file.getContentType(),
                     file.getSize()
             );
 
-            // 기존 프로필 이미지 삭제 코드 필요
-            // 새로운 프로필 이미지 저장 코드 필요
-
-            fileRepository.save(profile); // 새로운 프로필 이미지 정보 저장
+            fileRepository.save(profile);
         }
 
-        employee.update(name, position, email, hireDate, employeeStatus, profile, department);
-        employeeRepository.save(employee); // 수정된 직원 정보 저장
+        employee.update(
+                request.name(),
+                request.position(),
+                request.email(),
+                request.hireDate(),
+                request.status(),
+                profile,
+                department
+        );
 
+        employeeRepository.save(employee);
         return employeeMapper.toDto(employee);
     }
 
+    // ===========================
+    // 직원 삭제
+    // ===========================
     @Transactional
-    public void deleteEmployee(Long EmployeeId) {
-        Employee employee = employeeRepository.findById(EmployeeId)
+    public void deleteEmployee(Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
 
         File profile = employee.getProfile();
 
-        // 프로필 이미지 삭제(있는 경우)
-        if(profile != null) {
+        if (profile != null) {
             fileRepository.deleteById(profile.getId());
         }
 
-        employeeRepository.deleteById(EmployeeId);
+        employeeRepository.deleteById(employeeId);
     }
 
+    // =====================================================================
+    // 직원 "수" 조회 (LocalDate 적용)
+    // =====================================================================
+    public EmployeeCountDto getEmployeeCount(
+            EmployeeStatus status,
+            LocalDate fromDate,
+            LocalDate toDate
+    ) {
+        long count = employeeRepository.countByStatusAndHireDateBetween(
+                status,
+                fromDate,
+                toDate
+        );
+        return new EmployeeCountDto(count);
+    }
+
+    // =====================================================================
+    // 직원 "분포" 조회
+    // =====================================================================
+    public List<EmployeeDistributionDto> getEmployeeDistribution(
+            String groupBy,
+            EmployeeStatus status
+    ) {
+        String criteria = (groupBy == null || groupBy.isBlank())
+                ? "department"
+                : groupBy;
+
+        EmployeeStatus effectiveStatus = (status == null)
+                ? EmployeeStatus.ACTIVE
+                : status;
+
+        List<EmployeeRepository.EmployeeGroupCount> stats;
+
+        switch (criteria) {
+            case "department" ->
+                    stats = employeeRepository.countGroupByDepartment(effectiveStatus);
+            case "position" ->
+                    stats = employeeRepository.countGroupByPosition(effectiveStatus);
+            default ->
+                    throw new IllegalArgumentException("지원하지 않는 그룹화 입니다. groupBy=" + criteria);
+        }
+
+        long total = stats.stream()
+                .mapToLong(EmployeeRepository.EmployeeGroupCount::getCount)
+                .sum();
+
+        return stats.stream()
+                .map(s -> new EmployeeDistributionDto(
+                        s.getGroupKey(),
+                        s.getCount(),
+                        total > 0
+                                ? (double) s.getCount() * 100 / total
+                                : 0.0
+                ))
+                .toList();
+    }
+
+    // =====================================================================
+    // 직원 "증감 추이" 조회 (Trend)
+    // =====================================================================
     @Transactional(readOnly = true)
     public List<EmployeeTrendDto> getEmployeeTrend(EmployeeTrendRequest request) {
-        // from(시작 일시) : (기본값: 현재로부터 unit 기준 12개 이전)
-        // to(종료 일시) : (기본값: 현재)
-        // unit(시간 단위) : (day, week, month, quarter, year, 기본값: month)
-
 
         LocalDate from = request.from();
-        LocalDate to = request.to() != null ? request.to() : LocalDate.now(); // 종료 일시가 없는 경우 현재 날짜로 저장
+        LocalDate to = request.to() != null ? request.to() : LocalDate.now();
 
-        // 시작 일시가 없는 경우 종료 일시를 기준으로 12개 이전 일시로 저장
-        if(from == null){
-            switch(request.unit()){
+        if (from == null) {
+            switch (request.unit()) {
                 case day -> from = to.minusDays(12);
                 case week -> from = to.minusWeeks(12);
                 case month -> from = to.minusMonths(12);
@@ -174,17 +231,13 @@ public class EmployeeService {
         List<EmployeeTrendDto> result = new ArrayList<>();
         LocalDate targetDate = from;
 
-        // 시작 일시가 종료 일시보다 이전인 경우 쿼리문 실행
-        if(from.isBefore(to)){
-            // 종료 일시까지만 쿼리문 실행
-            while(!targetDate.isAfter(to)){
+        if (from.isBefore(to)) {
+            while (!targetDate.isAfter(to)) {
                 int count = employeeRepository.findEmployeeTrend(targetDate);
+                EmployeeTrendDto trend = getEmployeeTrendDto(result, targetDate, count);
+                result.add(trend);
 
-                EmployeeTrendDto employeeTrend = getEmployeeTrendDto(result, targetDate, count);
-
-                result.add(employeeTrend);
-
-                switch(request.unit()){
+                switch (request.unit()) {
                     case day -> targetDate = targetDate.plusDays(1);
                     case week -> targetDate = targetDate.plusWeeks(1);
                     case month -> targetDate = targetDate.plusMonths(1);
@@ -197,35 +250,34 @@ public class EmployeeService {
         return result;
     }
 
-    private EmployeeTrendDto getEmployeeTrendDto(List<EmployeeTrendDto> result, LocalDate targetDate, int count) {
-        EmployeeTrendDto employeeTrend;
-
-        // 첫 데이터의 경우 증감 비교 대상이 없으므로 0으로 저장
-        if(result.isEmpty()) {
-            employeeTrend = new EmployeeTrendDto(
+    private EmployeeTrendDto getEmployeeTrendDto(
+            List<EmployeeTrendDto> result,
+            LocalDate targetDate,
+            int count
+    ) {
+        if (result.isEmpty()) {
+            return new EmployeeTrendDto(
                     targetDate,
                     count,
                     0,
                     0.0
-                    );
+            );
         }
-        else {
-            int beforeCount = result.get(result.size() - 1).count();
-            int change = count - beforeCount;
-            double changeRate = 0.0;
 
-            // 이전 직원 수가 0명이 아닐 때만 증감률 계산
-            if(beforeCount != 0) {
-                changeRate = (double) change / beforeCount * 100;
-                changeRate = Math.round(changeRate * 100) / 100.0;
-            }
-            employeeTrend = new EmployeeTrendDto(
-                    targetDate,
-                    count,
-                    change,
-                    changeRate
-                    );
+        int beforeCount = result.get(result.size() - 1).count();
+        int change = count - beforeCount;
+
+        double changeRate = 0.0;
+        if (beforeCount != 0) {
+            changeRate = (double) change / beforeCount * 100;
+            changeRate = Math.round(changeRate * 100) / 100.0;
         }
-        return employeeTrend;
+
+        return new EmployeeTrendDto(
+                targetDate,
+                count,
+                change,
+                changeRate
+        );
     }
 }
