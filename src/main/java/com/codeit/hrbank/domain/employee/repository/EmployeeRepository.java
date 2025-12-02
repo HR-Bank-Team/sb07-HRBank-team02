@@ -72,4 +72,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         where e.hireDate <= :targetDate
         """)
     int findEmployeeTrend(@Param("targetDate") LocalDate targetDate);
+    long countByDepartmentId(Long departmentId);
 }
