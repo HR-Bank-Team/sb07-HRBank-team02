@@ -1,10 +1,12 @@
 package com.codeit.hrbank.domain.department.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.time.LocalDate;
 
 public record DepartmentUpdateRequest(
-        String name,
-        String description,
-        LocalDate establishedDate
+        @NotBlank String name,
+        @NotBlank String description,
+        @NotBlank LocalDate establishedDate
 ) {
 }

@@ -27,4 +27,21 @@ public class Department extends BaseUpdatableEntity {
     @Column(name = "established_date", nullable = false)
     private LocalDateTime establishedDate;
 
+    public void update(String name, String description, LocalDateTime localDate) {
+        if (name == null || name.isBlank() ) {
+            throw new IllegalArgumentException("부서명은 필수입니다.");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("설명은 필수입니다.");
+        }
+        if (localDate == null) {
+            throw new IllegalArgumentException("설립일은 필수입니다.");
+        }
+
+        this.name = name;
+        this.description = description;
+        this.establishedDate = localDate;
+    }
+
+
 }
