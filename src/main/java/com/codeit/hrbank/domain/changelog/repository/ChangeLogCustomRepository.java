@@ -21,7 +21,7 @@ public interface ChangeLogCustomRepository {
             Integer limit
     );
 
-    Long countChangeLogs(
+    Long countChangeLogsByFilter(
             String employeeNumber,
             String memo,
             String ipAddress,

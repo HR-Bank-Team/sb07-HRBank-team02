@@ -82,7 +82,7 @@ public class ChangeLogCustomRepositoryImpl implements ChangeLogCustomRepository 
     }
 
     @Override
-    public Long countChangeLogs(
+    public Long countChangeLogsByFilter(
             String employeeNumber,
             String memo,
             String ipAddress,

@@ -11,23 +11,22 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DepartmentMapper {
 
-//    private final EmployeeRepository employeeRepository; // TODO: 직원 EmployeeRepository 생성된이후 이부분으로 리펙토링하기
+    private final EmployeeRepository employeeRepository;
 
     public DepartmentDto toDto(Department department) {
-//        Long totalEmployeeNumber = employeeRepository.countByDepartmentId(department.getId()); // TODO: 직원 EmployeeRepository 생성된이후 이부분으로 리펙토링하기
-        Long totalEmployeeNumber = 999L;
+        Long totalEmployeeNumber = employeeRepository.countByDepartmentId(department.getId());
         return new DepartmentDto(department.getId(),
                 department.getName(),
                 department.getDescription(),
-                department.getEstablishedDate().toLocalDate(),
+                department.getEstablishedDate(),
                 totalEmployeeNumber);
     }
 
     public Department toEntity(DepartmentCreateRequest departmentCreateRequest) {
-            return new Department(
-                    departmentCreateRequest.name(),
-                    departmentCreateRequest.description(),
-                    departmentCreateRequest.establishDate().atStartOfDay()
-                    );
+        return new Department(
+                departmentCreateRequest.name(),
+                departmentCreateRequest.description(),
+                departmentCreateRequest.establishedDate()
+        );
     }
 }
