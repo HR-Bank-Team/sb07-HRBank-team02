@@ -14,7 +14,9 @@ public class BackupMapper {
                 backup.getStartedAt(),
                 backup.getEndedAt(),
                 backup.getStatus(),
-                backup.getFile().getId()
+                backup.getFile()==null
+                        ?null
+                        :backup.getFile().getId()
         );
     }
 }
