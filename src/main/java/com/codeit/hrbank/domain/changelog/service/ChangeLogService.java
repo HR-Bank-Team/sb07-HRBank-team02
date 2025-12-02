@@ -134,12 +134,12 @@ public class ChangeLogService {
 
     private List<Diff> extractDetailsByDelete(Employee employee, ChangeLog changeLog) {
         List<Diff> result = new ArrayList<>();
-        result.add(new Diff("입사일", null, employee.getHireDate().toString(), changeLog));
-        result.add(new Diff("이름", null, employee.getName(), changeLog));
-        result.add(new Diff("직함", null, employee.getPosition(), changeLog));
-        result.add(new Diff("부서명", null, employee.getDepartment().getName(), changeLog));
-        result.add(new Diff("이메일", null, employee.getEmail(), changeLog));
-        result.add(new Diff("상태", null, employee.getStatus().toString(), changeLog));
+        result.add(new Diff("입사일",  employee.getHireDate().toString(),null, changeLog));
+        result.add(new Diff("이름",  employee.getName(),null, changeLog));
+        result.add(new Diff("직함",  employee.getPosition(),null, changeLog));
+        result.add(new Diff("부서명",  employee.getDepartment().getName(),null, changeLog));
+        result.add(new Diff("이메일",  employee.getEmail(),null, changeLog));
+        result.add(new Diff("상태",  employee.getStatus().toString(),null, changeLog));
         return result;
     }
 }
