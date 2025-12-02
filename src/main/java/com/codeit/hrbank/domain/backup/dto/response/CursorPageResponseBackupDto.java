@@ -1,9 +1,11 @@
 package com.codeit.hrbank.domain.backup.dto.response;
 
+import java.time.LocalDateTime;
+
 public record CursorPageResponseBackupDto(
 
         Object[] content,
-        String nextCursor,
+        LocalDateTime nextCursor,
         Long nextIdAfter,
         Long size,
         Long totalElements,
