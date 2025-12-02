@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -25,9 +25,9 @@ public class Department extends BaseUpdatableEntity {
     private String description;
 
     @Column(name = "established_date", nullable = false)
-    private LocalDateTime establishedDate;
+    private LocalDate establishedDate;
 
-    public void update(String name, String description, LocalDateTime localDate) {
+    public void update(String name, String description, LocalDate localDate) {
         if (name == null || name.isBlank() ) {
             throw new IllegalArgumentException("부서명은 필수입니다.");
         }
