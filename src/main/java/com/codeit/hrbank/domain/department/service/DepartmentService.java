@@ -102,7 +102,7 @@ public class DepartmentService {
         Optional.ofNullable(departmentId).orElseThrow(() -> new IllegalArgumentException("id 값이 잘못되었습니다."));
 
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new IllegalArgumentException("존재하지않는 값입니다"));
-        department.update(request.name(), request.description(), request.establishedDate().atStartOfDay());
+        department.update(request.name(), request.description(), request.establishedDate());
         Department saved = departmentRepository.save(department);
 
         return departmentMapper.toDto(saved);

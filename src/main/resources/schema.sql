@@ -1,7 +1,7 @@
 CREATE TABLE departments (
                              id BIGSERIAL PRIMARY KEY,
                              name VARCHAR(100) NOT NULL UNIQUE,
-                             established_date TIMESTAMP NOT NULL,
+                             established_date DATE NOT NULL,
                              description TEXT NOT NULL,
                              created_at TIMESTAMP NOT NULL,
                              updated_at TIMESTAMP
