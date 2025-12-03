@@ -1,32 +1,41 @@
 package com.codeit.hrbank.domain.file.service;
 
 import com.codeit.hrbank.domain.backup.dto.export.ExportEmployeeDto;
+import com.codeit.hrbank.domain.file.entity.File;
+import com.codeit.hrbank.domain.file.repository.FileRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class FileStorage {
 
     @Value("${hrbank.storage.local.root-path}")
     private String root;
 
-    public Long put(Long id,byte[] bytes) throws IOException {
-        Path storagePath = resolvePath(id);
-        Files.write(storagePath,bytes);
-        return id;
-    }
+    private final FileRepository fileRepository;
 
-    public void putCsv(String fileName, List<ExportEmployeeDto> exportEmployeeDtos) throws IOException {
-        BufferedWriter bw = Files.newBufferedWriter(Path.of(root,fileName));
+    @Transactional
+    public Long saveCsv(String fileName, List<ExportEmployeeDto> exportEmployeeDtos) throws IOException {
+        Path storagePath = Path.of(root,fileName);
+        BufferedWriter bw = Files.newBufferedWriter(storagePath);
         bw.write("ID,employeeNumber,name,email,department,position,hiredate,status");
         bw.newLine();
         for(ExportEmployeeDto dto : exportEmployeeDtos){
@@ -45,11 +54,38 @@ public class FileStorage {
         }
         bw.flush();
         bw.close();
+
+        return Files.size(storagePath);
     }
 
-    public InputStream get(Long id){
-        return null;
+    @Transactional
+    public void saveProfile(Long id, byte[] bytes) throws IOException {
+        Path storagePath = resolvePathFromId(id);
+        Files.write(storagePath,bytes);
     }
+
+    public InputStream get(Long id) throws IOException {
+        Path storagePath = resolvePathFromId(id);
+        if(!Files.exists(storagePath)) return null;
+        return new ByteArrayInputStream(Files.readAllBytes(storagePath));
+    }
+
+    @Transactional
+    public ResponseEntity<Resource> download(Long id) throws IOException {
+        File file = fileRepository.findById(id).orElseThrow();
+        InputStream stream = get(id);
+        String fileName = file.getName();
+        String contentType = file.getType();
+
+        Resource resource = new InputStreamResource(stream);
+        String encodeFile = UriUtils.encode(fileName, StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition","attachment; filename= "+ encodeFile)
+                .header("Content-Type",contentType)
+                .body(resource);
+    }
+
 
     @PostConstruct
     void init() throws IOException {
@@ -58,11 +94,9 @@ public class FileStorage {
     }
 
 
-    private Path resolvePath(Long id){
-        Path temp = Path.of(root);
-        return temp.resolve(id.toString());
+    private Path resolvePathFromId(Long id){
+        String fileName = fileRepository.findById(id).orElseThrow().getName();
+        return Path.of(root,fileName);
     }
-
-
 
 }
