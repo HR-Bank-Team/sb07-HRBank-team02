@@ -64,6 +64,7 @@ public class FileStorage {
         Files.write(storagePath,bytes);
     }
 
+    @Transactional(readOnly = true)
     public InputStream get(Long id) throws IOException {
         Path storagePath = resolvePathFromId(id);
         if(!Files.exists(storagePath)) return null;
@@ -74,15 +75,11 @@ public class FileStorage {
     public ResponseEntity<Resource> download(Long id) throws IOException {
         File file = fileRepository.findById(id).orElseThrow();
         InputStream stream = get(id);
-        String fileName = file.getName();
-        String contentType = file.getType();
-
         Resource resource = new InputStreamResource(stream);
-        String encodeFile = UriUtils.encode(fileName, StandardCharsets.UTF_8);
-
+        String encodeFile = UriUtils.encode(file.getName(), StandardCharsets.UTF_8);
         return ResponseEntity.ok()
                 .header("Content-Disposition","attachment; filename= "+ encodeFile)
-                .header("Content-Type",contentType)
+                .header("Content-Type",file.getType())
                 .body(resource);
     }
 
