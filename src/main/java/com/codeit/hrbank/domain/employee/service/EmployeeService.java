@@ -138,15 +138,18 @@ public class EmployeeService {
     @Transactional
     public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file, String clientIp) throws IOException {
 
-        if (employeeRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
-        }
-
+        // 이메일 검증
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
 
         Department department = departmentRepository.findById(request.departmentId())
                 .orElseThrow(() -> new NoSuchElementException("부서가 존재하지 않습니다."));
+
+        // 이메일을 변경하지 않은 경우에는 예외 제외
+        if (!employee.getEmail().equals(request.email()) && employeeRepository.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
+        }
+
 
         // 수정 전 직원 정보 저장 (로그용)
         EmployeeDto beforeEmployeeInfo = employeeMapper.toDto(employee);
@@ -191,13 +194,13 @@ public class EmployeeService {
         if(!beforeEmployeeInfo.position().equals(employee.getPosition())) {
             diff.put("직함",List.of(beforeEmployeeInfo.position(), employee.getPosition()));
         }
-        if(beforeEmployeeInfo.departmentId().equals(employee.getDepartment().getId())){
+        if(!beforeEmployeeInfo.departmentId().equals(employee.getDepartment().getId())){
             diff.put("부서명", List.of(beforeEmployeeInfo.departmentName(), employee.getDepartment().getName()));
         }
-        if(beforeEmployeeInfo.email().equals(employee.getEmail())){
+        if(!beforeEmployeeInfo.email().equals(employee.getEmail())){
             diff.put("이메일", List.of(beforeEmployeeInfo.email(), employee.getEmail()));
         }
-        if(beforeEmployeeInfo.status().equals(employee.getStatus())){
+        if(!beforeEmployeeInfo.status().equals(employee.getStatus())){
             diff.put("상태", List.of(beforeEmployeeInfo.status().toString(), employee.getStatus().toString()));
         }
 
