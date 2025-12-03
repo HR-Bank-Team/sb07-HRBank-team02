@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface DiffRepository extends JpaRepository<Diff, Long> {
     List<Diff> findByChangeLogId(Long changeLogId);
+
+    List<Diff> findByChangeLog(ChangeLog changeLog);
 }
