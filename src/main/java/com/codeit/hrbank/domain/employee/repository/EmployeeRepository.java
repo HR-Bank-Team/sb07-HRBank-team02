@@ -15,25 +15,19 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     boolean existsByEmail(String email);
 
-    // ============================================================
     // 직원 수 조회 (LocalDate 기반)
-    // ============================================================
-    @Query("""
-        select count(e)
-        from Employee e
-        where (:status is null or e.status = :status)
-          and (:start is null or e.hireDate >= :start)
-          and (:end is null or e.hireDate <= :end)
-        """)
     long countByStatusAndHireDateBetween(
-            @Param("status") EmployeeStatus status,
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end
+            EmployeeStatus status,
+            LocalDate fromDate,
+            LocalDate toDate
     );
 
-    // ============================================================
+    // ✅ 2. 기간만으로 직원 수 조회 (status가 없을 때)
+    long countByHireDateBetween(
+            LocalDate fromDate,
+            LocalDate toDate
+    );
     // 직원 분포 조회 (부서별)
-    // ============================================================
     @Query("""
         select d.name as groupKey, count(e) as count
         from Employee e join e.department d
@@ -57,7 +51,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             @Param("status") EmployeeStatus status
     );
 
-    // 분포 조회용 Projection
     interface EmployeeGroupCount {
         String getGroupKey();
         long getCount();
