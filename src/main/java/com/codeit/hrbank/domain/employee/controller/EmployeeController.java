@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class EmployeeController implements EmployeeControllerDocs {
     public ResponseEntity<EmployeeDto> createEmployee(
             @RequestPart("employee") EmployeeCreateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file
-    ) {
+    ) throws IOException {
         EmployeeDto response = employeeService.createEmployee(request, file);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -54,7 +55,7 @@ public class EmployeeController implements EmployeeControllerDocs {
             @PathVariable Long id,
             @RequestPart("employee") EmployeeUpdateRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file
-    ) {
+    ) throws IOException {
         EmployeeDto response = employeeService.updateEmployee(id, request, file);
         return ResponseEntity.ok(response);
     }

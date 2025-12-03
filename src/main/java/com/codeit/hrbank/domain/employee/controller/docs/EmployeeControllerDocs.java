@@ -20,6 +20,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -141,7 +142,7 @@ public interface EmployeeControllerDocs {
             )
 
     })
-    ResponseEntity<EmployeeDto> createEmployee(EmployeeCreateRequest request, MultipartFile file);
+    ResponseEntity<EmployeeDto> createEmployee(EmployeeCreateRequest request, MultipartFile file) throws IOException;
 // 직원 상세 조회
     @Operation(
             summary = "직원 상세 조회",
@@ -294,7 +295,7 @@ public interface EmployeeControllerDocs {
             )
     })
 
-    ResponseEntity<EmployeeDto> updateEmployee(Long id, EmployeeUpdateRequest request, MultipartFile file);
+    ResponseEntity<EmployeeDto> updateEmployee(Long id, EmployeeUpdateRequest request, MultipartFile file) throws IOException;
 //직원 증감 추이
     @Operation(summary = "직원 증감 추이", description = "직원의 시간별 증감 추이를 조회합니다.")
     @ApiResponses(value = {

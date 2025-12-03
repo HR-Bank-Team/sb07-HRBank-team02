@@ -9,6 +9,7 @@ import com.codeit.hrbank.domain.employee.mapper.EmployeeMapper;
 import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import com.codeit.hrbank.domain.file.entity.File;
 import com.codeit.hrbank.domain.file.repository.FileRepository;
+import com.codeit.hrbank.domain.file.service.FileStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +37,11 @@ public class EmployeeService {
 
     private final EmployeeMapper employeeMapper;
 
+    private final FileStorage fileStorage;
+
     // 직원 등록
     @Transactional
-    public EmployeeDto createEmployee(EmployeeCreateRequest request, MultipartFile file) {
+    public EmployeeDto createEmployee(EmployeeCreateRequest request, MultipartFile file) throws IOException {
         // 이메일 중복 검증
         if (employeeRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
@@ -59,6 +63,7 @@ public class EmployeeService {
             );
 
             fileRepository.save(profile);
+            fileStorage.saveProfile(profile.getId(), file.getBytes());
         }
 
         Employee newEmployee = new Employee(
@@ -127,7 +132,7 @@ public class EmployeeService {
 
     // 직원 정보 수정
     @Transactional
-    public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file) {
+    public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file) throws IOException {
 
         if (employeeRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
@@ -149,6 +154,7 @@ public class EmployeeService {
             );
 
             fileRepository.save(profile);
+            fileStorage.saveProfile(profile.getId(), file.getBytes());
         }
 
         employee.update(
