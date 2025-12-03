@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -48,14 +49,14 @@ public class ChangeLogService {
             String employeeNumber,
             String ipAddress,
             String memo,
-            List<DiffDto> diffDtos) {
+            Map<String, List<String>> diffMapData) {
         ChangeLog changeLog =
                 new ChangeLog(ChangeLogType.UPDATED, ipAddress, LocalDateTime.now(), memo, employeeNumber);
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
         List<Diff> diffs = new ArrayList<>();
-        for (DiffDto diffDto : diffDtos) {
-            diffs.add(new Diff(diffDto.toString(), diffDto.getBefore(), diffDto.getAfter(), savedLog));
+        for (Map.Entry<String, List<String>> entry : diffMapData.entrySet()) {
+            diffs.add(new Diff(entry.getKey(), entry.getValue().get(0), entry.getValue().get(0), savedLog));
         }
         diffRepository.saveAll(diffs);
     }
