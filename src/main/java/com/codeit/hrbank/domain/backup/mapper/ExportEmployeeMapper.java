@@ -18,9 +18,8 @@ public class ExportEmployeeMapper {
                 employee.getDepartment().getId(),
                 employee.getDepartment().getName(),
                 employee.getPosition(),
-                LocalDateTime.from( employee.getHireDate()),
+                employee.getHireDate(),
                 employee.getStatus()
-
         );
     }
 }

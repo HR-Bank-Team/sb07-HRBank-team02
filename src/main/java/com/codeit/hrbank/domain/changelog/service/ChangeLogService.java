@@ -72,7 +72,7 @@ public class ChangeLogService {
         diffRepository.saveAll(diffs);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CursorPageResponseChangeLogDto getChangeLogs(ChangeLogFilter request) {
         List<ChangeLog> changeLogs = changeLogRepository.searchChangeLogs(
                 request.getEmployeeNumber(),
@@ -119,12 +119,16 @@ public class ChangeLogService {
 
 
     }
-
-    public List<DiffDto> getDiffsByChannelLogId(Long ChannelLogId){
-        List<Diff> byChangeLogId = diffRepository.findByChangeLogId(ChannelLogId);
+    @Transactional(readOnly = true)
+    public List<DiffDto> getDiffsByChannelLogId(Long changeLogId){
+        if (!changeLogRepository.existsChangeLogById(changeLogId)){
+            throw new IllegalArgumentException("존재하지 않는 채널 수정 이력입니다.");
+        }
+        List<Diff> byChangeLogId = diffRepository.findByChangeLogId(changeLogId);
         return byChangeLogId.stream().map(DiffMapper::toDto).toList();
     }
 
+    @Transactional(readOnly = true)
     public Long countChangeLogsBetween(
             LocalDateTime fromDate,
             LocalDateTime toDate){

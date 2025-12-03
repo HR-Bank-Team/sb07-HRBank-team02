@@ -5,6 +5,7 @@ import com.codeit.hrbank.domain.changelog.entity.ChangeLogType;
 import com.codeit.hrbank.domain.department.entity.Department;
 import com.codeit.hrbank.domain.employee.entity.Employee;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
+import com.codeit.hrbank.domain.file.entity.File;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -20,7 +21,7 @@ public class TestFixture {
         return new ChangeLog(
                 randomEnumType(ChangeLogType.class),
                 randomString(),
-                randomLocalDateTime(),
+                LocalDateTime.now(),
                 randomString(),
                 randomString()
         );
@@ -44,8 +45,21 @@ public class TestFixture {
         return new Department(
                 randomString(),
                 randomString(),
-                randomLocalDateTime()
+                LocalDate.from(randomLocalDateTime())
         );
+    }
+
+    public File fileFactory(){
+        return new File(
+                randomString(),
+                "image/png",
+                100l
+
+        );
+    }
+
+    public byte[] randomBytes(){
+        return UUID.randomUUID().toString().getBytes();
     }
 
     private String randomString(){
@@ -62,5 +76,7 @@ public class TestFixture {
         T[] values = enumClass.getEnumConstants();
         return values[(int)(Math.random()*values.length)];
     }
+
+
 
 }

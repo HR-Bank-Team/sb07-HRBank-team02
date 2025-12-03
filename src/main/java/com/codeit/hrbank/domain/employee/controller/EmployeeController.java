@@ -1,6 +1,6 @@
 package com.codeit.hrbank.domain.employee.controller;
 
-import com.codeit.hrbank.domain.department.dto.CursorPageRequestDepartmentDto;
+import com.codeit.hrbank.domain.employee.controller.docs.EmployeeControllerDocs;
 import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
 import com.codeit.hrbank.domain.employee.service.EmployeeService;
@@ -18,31 +18,25 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/employees")
-public class EmployeeController {
+public class EmployeeController implements EmployeeControllerDocs {
 
     private final EmployeeService employeeService;
 
-    // ===========================
-    // 직원 전체 조회
-    // ===========================
+    // 직원 목록 조회
     @GetMapping
     public ResponseEntity<CursorPageResponseEmployeeDto> getAllEmployee(CursorPageRequestEmployeeDto request) {
         CursorPageResponseEmployeeDto response = employeeService.getAllEmployee(request);
         return ResponseEntity.ok(response);
     }
 
-    // ===========================
-    // 직원 단건 조회
-    // ===========================
+    // 직원 상세 조회
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDto> getEmployee(@PathVariable Long id) {
         EmployeeDto response = employeeService.getEmployee(id);
         return ResponseEntity.ok(response);
     }
 
-    // ===========================
     // 직원 등록
-    // ===========================
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EmployeeDto> createEmployee(
             @RequestPart("employee") EmployeeCreateRequest request,
@@ -54,9 +48,7 @@ public class EmployeeController {
                 .body(response);
     }
 
-    // ===========================
     // 직원 정보 수정
-    // ===========================
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EmployeeDto> updateEmployee(
             @PathVariable Long id,
@@ -67,20 +59,16 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    // ===========================
     // 직원 삭제
-    // ===========================
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
     }
 
-    // ===========================
     // 직원 수 조회 (LocalDate 기반)
-    // ===========================
     @GetMapping("/count")
-    public ResponseEntity<EmployeeCountDto> getEmployeeCount(
+    public ResponseEntity<Long> getEmployeeCount(
             @RequestParam(required = false) EmployeeStatus status,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -90,20 +78,12 @@ public class EmployeeController {
             LocalDate toDate
     ) {
 
-        // from만 있고 to가 없으면 현재 날짜까지만 조회
-        if (fromDate != null && toDate == null) {
-            toDate = LocalDate.now();
-        }
-
-        EmployeeCountDto response =
-                employeeService.getEmployeeCount(status, fromDate, toDate);
-
-        return ResponseEntity.ok(response);
+        long count = employeeService.getEmployeeCount(status, fromDate, toDate);
+        return ResponseEntity.ok(count);
     }
 
-    // ===========================
+
     // 직원 분포 조회
-    // ===========================
     @GetMapping("/stats/distribution")
     public ResponseEntity<List<EmployeeDistributionDto>> getEmployeeDistribution(
             @RequestParam(defaultValue = "department") String groupBy,
@@ -115,9 +95,7 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    // ===========================
     // 직원 증감 추이 조회 (Trend)
-    // ===========================
     @GetMapping("/stats/trend")
     public ResponseEntity<List<EmployeeTrendDto>> trendEmployee(
             @ModelAttribute EmployeeTrendRequest employeeTrendRequest

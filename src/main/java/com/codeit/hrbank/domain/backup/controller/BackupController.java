@@ -31,7 +31,7 @@ public class BackupController {
                                                                      @RequestParam(required = false) String sortDirection,
                                                                      @RequestParam(required = false) String sortField,
                                                                      @RequestParam(required = false) Long size
-    ){
+  ){
         CursorBackupRequestDto dto = new CursorBackupRequestDto(
                 worker, status, startedAtFrom,startedAtTo,sortDirection, sortField , size
         );
