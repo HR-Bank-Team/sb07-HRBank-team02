@@ -55,7 +55,7 @@ public interface EmployeeControllerDocs {
             )
     })
 
-    ResponseEntity<List<EmployeeDto>> getAllEmployee();
+    ResponseEntity<CursorPageResponseEmployeeDto> getAllEmployee(CursorPageRequestEmployeeDto request);
 
 //직원 등록
     @Operation(

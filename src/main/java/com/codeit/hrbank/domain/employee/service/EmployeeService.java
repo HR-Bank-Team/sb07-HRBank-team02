@@ -10,6 +10,11 @@ import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import com.codeit.hrbank.domain.file.entity.File;
 import com.codeit.hrbank.domain.file.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,9 +93,42 @@ public class EmployeeService {
     // 직원 전체 조회
     // ===========================
     @Transactional(readOnly = true)
-    public List<EmployeeDto> getAllEmployee() {
-        List<Employee> employees = employeeRepository.findAll();
-        return employeeMapper.toDto(employees);
+    public CursorPageResponseEmployeeDto getAllEmployee(CursorPageRequestEmployeeDto request) {
+
+        Direction direction = request.sortDirection() == SortDirection.asc ? Direction.ASC : Direction.DESC;
+
+        // direction과 sortField() 값에 따라 이름, 입사일, 사원번호 중 하나의 기준으로 정렬
+        Pageable pageable = PageRequest.of(0, request.size(),
+                Sort.by(direction, request.sortField().toString())
+        );
+
+        Slice<EmployeeDto> employeeSlice = employeeRepository.findByKeywordWithCursor(
+                request.nameOrEmail(),
+                request.departmentName(),
+                request.position(),
+                request.employeeNumber(),
+                request.hireDateFrom(),
+                request.hireDateTo(),
+                request.status(),
+                request.cursor(),
+                request.idAfter(), // 첫 페이지의 경우 null 값을 저장하여 처음 id부터
+                request.sortDirection().toString(),
+                request.sortField().toString(),
+                pageable
+        );
+
+        // 조건에 맞는 총 인원 수 저장
+        Long count = employeeRepository.countByKeyword(
+                request.nameOrEmail(),
+                request.departmentName(),
+                request.position(),
+                request.employeeNumber(),
+                request.hireDateFrom(),
+                request.hireDateTo(),
+                request.status()
+        );
+
+        return employeeMapper.toDto(employeeSlice, count);
     }
 
     // ===========================
