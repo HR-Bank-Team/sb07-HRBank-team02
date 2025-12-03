@@ -29,33 +29,36 @@ public class FileStorage {
 
     @Value("${hrbank.storage.local.root-path}")
     private String root;
+    private String profilePath;
+    private String backupErrorLogPath;
+    private String backupFilePath;
 
     private final FileRepository fileRepository;
 
     @Transactional
     public Long saveCsv(String fileName, List<ExportEmployeeDto> exportEmployeeDtos) throws IOException {
-        Path storagePath = Path.of(root,fileName);
-        BufferedWriter bw = Files.newBufferedWriter(storagePath);
-        bw.write("ID,employeeNumber,name,email,department,position,hiredate,status");
-        bw.newLine();
-        for(ExportEmployeeDto dto : exportEmployeeDtos){
-            String line = MessageFormat.format("{0},{1},{2},{3},{4},{5},{6},{7}",
-                    dto.id(),
-                    dto.employeeNumber(),
-                    dto.name(),
-                    dto.email(),
-                    dto.departmentName(),
-                    dto.position(),
-                    dto.hireDate(),
-                    dto.status()
-                    );
-            bw.write(line);
-            bw.newLine();
-        }
-        bw.flush();
-        bw.close();
+        Path storagePath = Path.of(backupFilePath,fileName);
+        BufferedWriter bw =Files.newBufferedWriter(storagePath);
 
-        return Files.size(storagePath);
+            bw.write("ID,employeeNumber,name,email,department,position,hiredate,status");
+            bw.newLine();
+            for (ExportEmployeeDto dto : exportEmployeeDtos) {
+                String line = MessageFormat.format("{0},{1},{2},{3},{4},{5},{6},{7}",
+                        dto.id(),
+                        dto.employeeNumber(),
+                        dto.name(),
+                        dto.email(),
+                        dto.departmentName(),
+                        dto.position(),
+                        dto.hireDate(),
+                        dto.status()
+                );
+                bw.write(line);
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+          return Files.size(storagePath);
     }
 
     @Transactional
@@ -83,17 +86,45 @@ public class FileStorage {
                 .body(resource);
     }
 
+    @Transactional
+    public Long saveLog(String fileName, String errorMessage ) throws IOException {
+        Path storagePath = Path.of(backupErrorLogPath,fileName);
+        BufferedWriter bw = Files.newBufferedWriter(storagePath);
+        bw.write(errorMessage);
+        bw.flush();
+        bw.close();
+        return Files.size(storagePath);
+    }
+
+    @Transactional
+    public void deleteById(Long id) throws IOException {
+        Path storagePath = resolvePathFromId(id);
+        if(Files.exists(storagePath)) Files.delete(storagePath);
+    }
+
 
     @PostConstruct
     void init() throws IOException {
+
+        profilePath = root+"/profile";
+        backupErrorLogPath = root +"/log";
+        backupFilePath = root +"/backup";
+
         Path tempPath = Path.of(root);
+        Path logPath = Path.of(backupErrorLogPath);
+        Path backupPath = Path.of(backupFilePath);
+        Path imagePath = Path.of(profilePath);
+
         if(!Files.exists(tempPath))Files.createDirectories(tempPath);
+        if(!Files.exists(logPath))Files.createDirectories(logPath);
+        if(!Files.exists(imagePath))Files.createDirectories(imagePath);
+        if(!Files.exists(backupPath))Files.createDirectories(backupPath);
     }
 
 
     private Path resolvePathFromId(Long id){
         String fileName = fileRepository.findById(id).orElseThrow().getName();
-        return Path.of(root,fileName);
+        return Path.of(profilePath,fileName);
     }
 
 }

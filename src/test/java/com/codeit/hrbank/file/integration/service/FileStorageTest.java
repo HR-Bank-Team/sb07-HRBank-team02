@@ -3,27 +3,17 @@ package com.codeit.hrbank.file.integration.service;
 import com.codeit.hrbank.backup.util.TestFixture;
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.sevice.BackupRegister;
-import com.codeit.hrbank.domain.backup.sevice.BackupService;
 import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
-import com.codeit.hrbank.domain.department.entity.Department;
-import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
-import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import com.codeit.hrbank.domain.file.repository.FileRepository;
 import com.codeit.hrbank.domain.file.service.FileService;
 import com.codeit.hrbank.domain.file.service.FileStorage;
-import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-
-import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,9 +29,6 @@ public class FileStorageTest {
 
     @Autowired
     BackupRegister  backupRegister;
-
-    @Autowired
-    EmployeeRepository employeeRepository;
 
     @Autowired
     TestFixture fixture;
@@ -70,14 +57,19 @@ public class FileStorageTest {
 
     @Test
     @DisplayName("[정상 케이스] 프로필 파일 저장")
-    void saveProfile(){
+    void saveProfile()  {
 
         //given
 
+
         //when
 
+
         //then
+
     }
+
+
 
     @Test
     @DisplayName("[정상 케이스] csv 파일 다운로드")
@@ -108,4 +100,16 @@ public class FileStorageTest {
 
         //then
     }
+
+    @Test
+    @DisplayName("[정상 케이스] 에러 로그 다운로드")
+    void downloadErrorLog(){
+
+        //given
+
+        //when
+
+        //then
+    }
+
 }

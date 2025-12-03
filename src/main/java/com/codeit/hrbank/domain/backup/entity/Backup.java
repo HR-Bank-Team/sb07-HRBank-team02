@@ -45,4 +45,11 @@ public class Backup extends BaseEntity {
         this.status = BackupStatus.COMPLETED;
         return this;
     }
+
+    public Backup backupFail(File file){
+        this.endedAt = LocalDateTime.now();
+        this.file = file;
+        this.status = BackupStatus.FAILED;
+        return this;
+    }
 }
