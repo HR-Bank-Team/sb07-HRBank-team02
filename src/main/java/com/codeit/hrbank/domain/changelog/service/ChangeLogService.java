@@ -119,9 +119,12 @@ public class ChangeLogService {
 
 
     }
-
-    public List<DiffDto> getDiffsByChannelLogId(Long ChannelLogId){
-        List<Diff> byChangeLogId = diffRepository.findByChangeLogId(ChannelLogId);
+    @Transactional
+    public List<DiffDto> getDiffsByChannelLogId(Long changeLogId){
+        if (!changeLogRepository.existsChangeLogById(changeLogId)){
+            throw new IllegalArgumentException("존재하지 않는 채널 수정 이력입니다.");
+        }
+        List<Diff> byChangeLogId = diffRepository.findByChangeLogId(changeLogId);
         return byChangeLogId.stream().map(DiffMapper::toDto).toList();
     }
 

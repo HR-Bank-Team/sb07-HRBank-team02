@@ -13,6 +13,8 @@ import java.util.List;
 
 public interface ChangeLogRepository extends JpaRepository<ChangeLog, Long>, ChangeLogCustomRepository {
 
+    boolean existsChangeLogById(Long id);
+
     Long countByAtBetween(LocalDateTime atAfter, LocalDateTime atBefore);
 
     @Query("SELECT max(c.at) FROM ChangeLog c")
