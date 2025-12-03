@@ -4,6 +4,7 @@ import com.codeit.hrbank.domain.employee.controller.docs.EmployeeControllerDocs;
 import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
 import com.codeit.hrbank.domain.employee.service.EmployeeService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -41,9 +42,14 @@ public class EmployeeController implements EmployeeControllerDocs {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EmployeeDto> createEmployee(
             @RequestPart("employee") EmployeeCreateRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            HttpServletRequest servletRequest
     ) throws IOException {
-        EmployeeDto response = employeeService.createEmployee(request, file);
+        // IP 추출
+        String clientIp = servletRequest.getRemoteAddr();
+
+        EmployeeDto response = employeeService.createEmployee(request, file, clientIp);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -54,16 +60,26 @@ public class EmployeeController implements EmployeeControllerDocs {
     public ResponseEntity<EmployeeDto> updateEmployee(
             @PathVariable Long id,
             @RequestPart("employee") EmployeeUpdateRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            HttpServletRequest servletRequest
     ) throws IOException {
-        EmployeeDto response = employeeService.updateEmployee(id, request, file);
+        // IP 추출
+        String clientIp = servletRequest.getRemoteAddr();
+
+        EmployeeDto response = employeeService.updateEmployee(id, request, file, clientIp);
         return ResponseEntity.ok(response);
     }
 
     // 직원 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
-        employeeService.deleteEmployee(id);
+    public ResponseEntity<Void> deleteEmployee(
+            @PathVariable Long id,
+            HttpServletRequest servletRequest
+    ) {
+        // IP 추출
+        String clientIp = servletRequest.getRemoteAddr();
+
+        employeeService.deleteEmployee(id, clientIp);
         return ResponseEntity.noContent().build();
     }
 

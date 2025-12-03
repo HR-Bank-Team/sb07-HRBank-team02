@@ -1,5 +1,6 @@
 package com.codeit.hrbank.domain.employee.service;
 
+import com.codeit.hrbank.domain.changelog.service.ChangeLogService;
 import com.codeit.hrbank.domain.department.entity.Department;
 import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
 import com.codeit.hrbank.domain.employee.dto.*;
@@ -22,10 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +34,15 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final FileRepository fileRepository;
 
+    private final ChangeLogService changeLogService;
+
     private final EmployeeMapper employeeMapper;
 
     private final FileStorage fileStorage;
 
     // 직원 등록
     @Transactional
-    public EmployeeDto createEmployee(EmployeeCreateRequest request, MultipartFile file) throws IOException {
+    public EmployeeDto createEmployee(EmployeeCreateRequest request, MultipartFile file, String clientIp) throws IOException {
         // 이메일 중복 검증
         if (employeeRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
@@ -76,6 +77,9 @@ public class EmployeeService {
                 profile,
                 department
         );
+
+        // 직원 생성 로그 저장
+        changeLogService.recordLogByAddEmployee(employeeNumber, clientIp, request.memo(), newEmployee);
 
         employeeRepository.save(newEmployee);
         return employeeMapper.toDto(newEmployee);
@@ -132,7 +136,7 @@ public class EmployeeService {
 
     // 직원 정보 수정
     @Transactional
-    public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file) throws IOException {
+    public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file, String clientIp) throws IOException {
 
         if (employeeRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
@@ -143,6 +147,9 @@ public class EmployeeService {
 
         Department department = departmentRepository.findById(request.departmentId())
                 .orElseThrow(() -> new NoSuchElementException("부서가 존재하지 않습니다."));
+
+        // 수정 전 직원 정보 저장 (로그용)
+        EmployeeDto beforeEmployeeInfo = employeeMapper.toDto(employee);
 
         File profile = null;
 
@@ -171,14 +178,42 @@ public class EmployeeService {
         );
 
         employeeRepository.save(employee);
+
+        // 직원 수정 정보 로그 저장
+        Map<String, List<String>> diff = new ConcurrentHashMap<>();
+
+        if(!beforeEmployeeInfo.hireDate().equals(employee.getHireDate())){
+            diff.put("입사일", List.of(beforeEmployeeInfo.hireDate().toString(), employee.getHireDate().toString()));
+        }
+        if(!beforeEmployeeInfo.name().equals(employee.getName())) {
+            diff.put("이름", List.of(beforeEmployeeInfo.name(), employee.getName()));
+        }
+        if(!beforeEmployeeInfo.position().equals(employee.getPosition())) {
+            diff.put("직함",List.of(beforeEmployeeInfo.position(), employee.getPosition()));
+        }
+        if(beforeEmployeeInfo.departmentId().equals(employee.getDepartment().getId())){
+            diff.put("부서명", List.of(beforeEmployeeInfo.departmentName(), employee.getDepartment().getName()));
+        }
+        if(beforeEmployeeInfo.email().equals(employee.getEmail())){
+            diff.put("이메일", List.of(beforeEmployeeInfo.email(), employee.getEmail()));
+        }
+        if(beforeEmployeeInfo.status().equals(employee.getStatus())){
+            diff.put("상태", List.of(beforeEmployeeInfo.status().toString(), employee.getStatus().toString()));
+        }
+
+        changeLogService.recordLogByUpdateEmployee(employee.getEmployeeNumber(), clientIp, request.memo(), diff);
+
         return employeeMapper.toDto(employee);
     }
 
     // 직원 삭제
     @Transactional
-    public void deleteEmployee(Long employeeId) {
+    public void deleteEmployee(Long employeeId, String clientIp) {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
+
+        // 직원 삭제 로그 저장
+        changeLogService.recordLogByDeleteEmployee(employee.getEmployeeNumber(), clientIp, employee);
 
         File profile = employee.getProfile();
 
