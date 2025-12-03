@@ -52,18 +52,7 @@ public class BackupRegister {
 
     @Transactional
     public BackupDto createBatchBackup() throws Exception {
-        String ip = SYSTEM_USER;
-        LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
-        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
-
-        if(!isNecessaryBackup(latestChangeTime)){
-            Backup backup = backupRepository.save(
-                    new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
-            return backupMapper.toDto(backup);
-        }
-        Backup backup = saveBackup(SYSTEM_USER);
-        latestBackupTime = backup.getEndedAt();
-        return backupMapper.toDto(backup);
+        return createBackup(SYSTEM_USER);
     }
 
     @Transactional
