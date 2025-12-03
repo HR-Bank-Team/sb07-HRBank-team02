@@ -24,7 +24,7 @@ public class ChangeLogController implements ChangeLogControllerDocs {
 
     private final ChangeLogService changeLogService;
 
-    //BindException, RestControllerAdvice에 추가해줘야 함
+
     @GetMapping
     public ResponseEntity<CursorPageResponseChangeLogDto> getChangeLogs(
              @ModelAttribute ChangeLogFilter changeLogFilter
