@@ -1,5 +1,6 @@
 package com.codeit.hrbank.domain.employee.controller;
 
+import com.codeit.hrbank.domain.department.dto.CursorPageRequestDepartmentDto;
 import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
 import com.codeit.hrbank.domain.employee.service.EmployeeService;
@@ -25,9 +26,9 @@ public class EmployeeController {
     // 직원 전체 조회
     // ===========================
     @GetMapping
-    public ResponseEntity<List<EmployeeDto>> getAllEmployee() {
-        List<EmployeeDto> responses = employeeService.getAllEmployee();
-        return ResponseEntity.ok(responses);
+    public ResponseEntity<CursorPageResponseEmployeeDto> getAllEmployee(CursorPageRequestEmployeeDto request) {
+        CursorPageResponseEmployeeDto response = employeeService.getAllEmployee(request);
+        return ResponseEntity.ok(response);
     }
 
     // ===========================
