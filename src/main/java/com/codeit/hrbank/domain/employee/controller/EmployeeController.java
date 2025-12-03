@@ -75,7 +75,7 @@ public class EmployeeController implements EmployeeControllerDocs {
     public ResponseEntity<Void> deleteEmployee(
             @PathVariable Long id,
             HttpServletRequest servletRequest
-    ) {
+    ) throws IOException {
         // IP 추출
         String clientIp = servletRequest.getRemoteAddr();
 

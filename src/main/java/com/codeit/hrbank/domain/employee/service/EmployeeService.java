@@ -163,8 +163,10 @@ public class EmployeeService {
                     file.getSize()
             );
 
-            fileRepository.deleteById(employee.getProfile().getId()); // 기존 프로필 이미지 정보 삭제
-            // 프로필 이미지 삭제 로직 추가 필요
+            if(employee.getProfile() != null) {
+                fileStorage.deleteById(employee.getProfile().getId()); // 실제 프로필 이미지 삭제
+                fileRepository.deleteById(employee.getProfile().getId()); // 기존 프로필 이미지 정보 삭제
+            }
 
             fileRepository.save(profile); // 새로운 프로필 이미지 정보 저장
             fileStorage.saveProfile(profile.getId(), file.getBytes()); // 새로운 프로필 이미지 저장
@@ -211,7 +213,7 @@ public class EmployeeService {
 
     // 직원 삭제
     @Transactional
-    public void deleteEmployee(Long employeeId, String clientIp) {
+    public void deleteEmployee(Long employeeId, String clientIp) throws IOException {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
 
@@ -221,8 +223,8 @@ public class EmployeeService {
         File profile = employee.getProfile();
 
         if (profile != null) {
-            fileRepository.deleteById(profile.getId());
-            // 프로필 이미지 데이터 삭제 로직 필요
+            fileStorage.deleteById(profile.getId()); // 실제 프로필 이미지 삭제
+            fileRepository.deleteById(profile.getId()); // 프로필 정보 삭제
         }
 
         employeeRepository.deleteById(employeeId);

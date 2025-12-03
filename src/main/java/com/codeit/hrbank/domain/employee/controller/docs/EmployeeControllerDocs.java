@@ -215,7 +215,7 @@ public interface EmployeeControllerDocs {
     })
 
 
-    ResponseEntity<Void> deleteEmployee(Long id, HttpServletRequest servletRequest);
+    ResponseEntity<Void> deleteEmployee(Long id, HttpServletRequest servletRequest) throws IOException;
 //직원 수정
     @Operation(summary = "직원 수정", description = "직원의 정보를 수정합니다.")
     @ApiResponses(value = {
