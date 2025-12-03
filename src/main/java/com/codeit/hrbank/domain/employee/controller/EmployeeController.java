@@ -42,7 +42,7 @@ public class EmployeeController implements EmployeeControllerDocs {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EmployeeDto> createEmployee(
             @RequestPart("employee") EmployeeCreateRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "profile", required = false) MultipartFile file,
             HttpServletRequest servletRequest
     ) throws IOException {
         // IP 추출
@@ -60,7 +60,7 @@ public class EmployeeController implements EmployeeControllerDocs {
     public ResponseEntity<EmployeeDto> updateEmployee(
             @PathVariable Long id,
             @RequestPart("employee") EmployeeUpdateRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "profile", required = false) MultipartFile file,
             HttpServletRequest servletRequest
     ) throws IOException {
         // IP 추출
