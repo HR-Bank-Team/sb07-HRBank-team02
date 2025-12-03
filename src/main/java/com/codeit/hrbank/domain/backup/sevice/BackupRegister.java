@@ -12,7 +12,6 @@ import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import com.codeit.hrbank.domain.file.entity.File;
 import com.codeit.hrbank.domain.file.repository.FileRepository;
 import com.codeit.hrbank.domain.file.service.FileStorage;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,8 +45,7 @@ public class BackupRegister {
             return backupMapper.toDto(backup);
         }
 
-        Backup backup = afterRegister(ip);
-        backup = backupRepository.findById(backup.getId()).orElseThrow();
+        Backup backup = saveBackup(ip);
         latestBackupTime = backup.getEndedAt();
         return backupMapper.toDto(backup);
     }
@@ -63,14 +61,13 @@ public class BackupRegister {
                     new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
             return backupMapper.toDto(backup);
         }
-        Backup backup = afterRegister(SYSTEM_USER);
-        backup = backupRepository.findById(backup.getId()).orElseThrow();
+        Backup backup = saveBackup(SYSTEM_USER);
         latestBackupTime = backup.getEndedAt();
         return backupMapper.toDto(backup);
     }
 
     @Transactional
-    protected Backup afterRegister(String ip) throws Exception {
+    protected Backup saveBackup(String ip) throws Exception {
 
         Backup backup = new Backup(ip,LocalDateTime.now(),LocalDateTime.now(),BackupStatus.IN_PROGRESS,null);
         String fileName = backup.getStartedAt().toString().replace(":", "-") + ".csv";
