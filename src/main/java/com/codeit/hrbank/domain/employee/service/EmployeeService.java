@@ -35,9 +35,7 @@ public class EmployeeService {
 
     private final EmployeeMapper employeeMapper;
 
-    // ===========================
     // 직원 등록
-    // ===========================
     @Transactional
     public EmployeeDto createEmployee(EmployeeCreateRequest request, MultipartFile file) {
         // 이메일 중복 검증
@@ -78,9 +76,7 @@ public class EmployeeService {
         return employeeMapper.toDto(newEmployee);
     }
 
-    // ===========================
     // 직원 상세 조회
-    // ===========================
     @Transactional(readOnly = true)
     public EmployeeDto getEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
@@ -89,9 +85,7 @@ public class EmployeeService {
         return employeeMapper.toDto(employee);
     }
 
-    // ===========================
     // 직원 전체 조회
-    // ===========================
     @Transactional(readOnly = true)
     public CursorPageResponseEmployeeDto getAllEmployee(CursorPageRequestEmployeeDto request) {
 
@@ -131,9 +125,7 @@ public class EmployeeService {
         return employeeMapper.toDto(employeeSlice, count);
     }
 
-    // ===========================
     // 직원 정보 수정
-    // ===========================
     @Transactional
     public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file) {
 
@@ -173,9 +165,7 @@ public class EmployeeService {
         return employeeMapper.toDto(employee);
     }
 
-    // ===========================
     // 직원 삭제
-    // ===========================
     @Transactional
     public void deleteEmployee(Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
@@ -189,6 +179,7 @@ public class EmployeeService {
 
         employeeRepository.deleteById(employeeId);
     }
+
     // 직원 수 조회
     public long getEmployeeCount(
             EmployeeStatus status,
@@ -215,11 +206,7 @@ public class EmployeeService {
         }
     }
 
-
-
-    // =====================================================================
-    // 직원 "분포" 조회
-    // =====================================================================
+    // 직원 분포 조회
     public List<EmployeeDistributionDto> getEmployeeDistribution(
             String groupBy,
             EmployeeStatus status
@@ -258,15 +245,17 @@ public class EmployeeService {
                 .toList();
     }
 
-    // =====================================================================
-    // 직원 "증감 추이" 조회 (Trend)
-    // =====================================================================
+    // 직원 수 추이 조회
     @Transactional(readOnly = true)
     public List<EmployeeTrendDto> getEmployeeTrend(EmployeeTrendRequest request) {
+        // from(시작 일시) : (기본값: 현재로부터 unit 기준 12개 이전)
+        // to(종료 일시) : (기본값: 현재)
+        // unit(시간 단위) : (day, week, month, quarter, year, 기본값: month)
 
         LocalDate from = request.from();
-        LocalDate to = request.to() != null ? request.to() : LocalDate.now();
+        LocalDate to = request.to() != null ? request.to() : LocalDate.now(); // 종료 일시가 없는 경우 현재 날짜로 저장
 
+        // 시작 일시가 없는 경우 종료 일시를 기준으로 12개 이전 일시로 저장
         if (from == null) {
             switch (request.unit()) {
                 case day -> from = to.minusDays(12);
@@ -280,7 +269,9 @@ public class EmployeeService {
         List<EmployeeTrendDto> result = new ArrayList<>();
         LocalDate targetDate = from;
 
+        // 시작 일시가 종료 일시보다 이전인 경우 쿼리문 실행
         if (from.isBefore(to)) {
+            // 종료 일시까지만 쿼리문 실행
             while (!targetDate.isAfter(to)) {
                 int count = employeeRepository.findEmployeeTrend(targetDate);
                 EmployeeTrendDto trend = getEmployeeTrendDto(result, targetDate, count);
@@ -304,6 +295,7 @@ public class EmployeeService {
             LocalDate targetDate,
             int count
     ) {
+        // 첫 데이터의 경우 증감 비교 대상이 없으므로 0으로 저장
         if (result.isEmpty()) {
             return new EmployeeTrendDto(
                     targetDate,
@@ -315,8 +307,9 @@ public class EmployeeService {
 
         int beforeCount = result.get(result.size() - 1).count();
         int change = count - beforeCount;
-
         double changeRate = 0.0;
+
+        // 이전 직원 수가 0명이 아닐 때만 증감률 계산
         if (beforeCount != 0) {
             changeRate = (double) change / beforeCount * 100;
             changeRate = Math.round(changeRate * 100) / 100.0;
