@@ -36,8 +36,7 @@ public class BackupRegister {
     private LocalDateTime latestBackupTime = LocalDateTime.MIN;
 
     @Transactional
-    public BackupDto createBackup(HttpServletRequest request) throws Exception {
-        String ip = request.getRemoteAddr();
+    public BackupDto createBackup(String ip) throws Exception {
         LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
         latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
 

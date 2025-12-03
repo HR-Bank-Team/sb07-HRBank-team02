@@ -66,7 +66,8 @@ public class IBackupService implements BackupService{
 
     @Override
     public BackupDto createBackup(HttpServletRequest request) throws Exception {
-        return backupRegister.createBackup(request);
+        String ip = request.getRemoteAddr();
+        return backupRegister.createBackup(ip);
     }
 
     @Override
