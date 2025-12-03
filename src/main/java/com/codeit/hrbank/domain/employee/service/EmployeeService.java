@@ -153,8 +153,11 @@ public class EmployeeService {
                     file.getSize()
             );
 
-            fileRepository.save(profile);
-            fileStorage.saveProfile(profile.getId(), file.getBytes());
+            fileRepository.deleteById(employee.getProfile().getId()); // 기존 프로필 이미지 정보 삭제
+            // 프로필 이미지 삭제 로직 추가 필요
+
+            fileRepository.save(profile); // 새로운 프로필 이미지 정보 저장
+            fileStorage.saveProfile(profile.getId(), file.getBytes()); // 새로운 프로필 이미지 저장
         }
 
         employee.update(
@@ -181,6 +184,7 @@ public class EmployeeService {
 
         if (profile != null) {
             fileRepository.deleteById(profile.getId());
+            // 프로필 이미지 데이터 삭제 로직 필요
         }
 
         employeeRepository.deleteById(employeeId);
