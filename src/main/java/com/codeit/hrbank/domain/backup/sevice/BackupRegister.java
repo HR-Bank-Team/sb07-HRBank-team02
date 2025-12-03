@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class BackupRegister {
     private LocalDateTime latestBackupTime = LocalDateTime.MIN;
 
     @Transactional
-    public BackupDto createBackup(String ip) throws Exception {
+    public BackupDto createBackup(String ip) {
         LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
         latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
 
@@ -51,19 +52,34 @@ public class BackupRegister {
     }
 
     @Transactional
-    public BackupDto createBatchBackup() throws Exception {
+    public BackupDto createBatchBackup(){
         return createBackup(SYSTEM_USER);
     }
 
     @Transactional
-    protected Backup saveBackup(String ip) throws Exception {
+    protected Backup saveBackup(String ip)  {
 
         Backup backup = new Backup(ip,LocalDateTime.now(),LocalDateTime.now(),BackupStatus.IN_PROGRESS,null);
         String fileName = backup.getStartedAt().toString().replace(":", "-") + ".csv";
         List<ExportEmployeeDto> employeeDtos = employeeRepository.findAll().stream().map(exportEmployeeMapper::toDto).toList();
-        Long fileSize = fileStorage.saveCsv(fileName, employeeDtos);
-        File file = fileRepository.save(new File(fileName, "text/csv", fileSize));
-        backup.backupComplete(file);
+
+        try {
+            Long fileSize = fileStorage.saveCsv(fileName, employeeDtos);
+            File file = fileRepository.save(new File(fileName, "text/csv", fileSize));
+            backup.backupComplete(file);
+        }
+        catch (Exception e) {
+            String errorLogName = backup.getStartedAt().toString().replace(":", "-")+".log";
+            try {
+                Long fileSize = fileStorage.saveLog(errorLogName, e.getMessage());
+                File file =  fileRepository.save(new File(fileName, "text/plain", fileSize));
+                backup.backupFail(file);
+            }
+            catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+
+        }
         return backupRepository.save(backup);
     }
 

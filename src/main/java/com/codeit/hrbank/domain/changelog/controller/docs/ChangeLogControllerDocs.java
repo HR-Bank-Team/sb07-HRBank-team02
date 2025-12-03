@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -62,7 +64,7 @@ public interface ChangeLogControllerDocs {
                     )
             }
     )
-    ResponseEntity<CursorPageResponseChangeLogDto> getChangeLogs(ChangeLogFilter changeLogFilter);
+    ResponseEntity<CursorPageResponseChangeLogDto> getChangeLogs(@Valid ChangeLogFilter changeLogFilter);
 
     @Operation(summary = "직원 정보 수정 이력 상세 조회")
     @ApiResponses(
@@ -97,7 +99,7 @@ public interface ChangeLogControllerDocs {
                     )
             }
     )
-    ResponseEntity<List<DiffDto>> getChangeLogDetails(Long id);
+    ResponseEntity<List<DiffDto>> getChangeLogDetails(@Positive Long id);
 
     @Operation(summary = "기간 별 수정 이력 건수 조회")
     @ApiResponses(

@@ -3,6 +3,8 @@ package com.codeit.hrbank.domain.changelog.mapper;
 
 import com.codeit.hrbank.domain.changelog.dto.ChangeLogDto;
 import com.codeit.hrbank.domain.changelog.entity.ChangeLog;
+import lombok.Getter;
+
 
 public class ChangeLogMapper {
 

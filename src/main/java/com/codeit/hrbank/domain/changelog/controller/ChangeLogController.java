@@ -24,10 +24,10 @@ public class ChangeLogController implements ChangeLogControllerDocs {
 
     private final ChangeLogService changeLogService;
 
-    //BindException, RestControllerAdvice에 추가해줘야 함
+
     @GetMapping
     public ResponseEntity<CursorPageResponseChangeLogDto> getChangeLogs(
-            @Valid @ModelAttribute ChangeLogFilter changeLogFilter
+             @ModelAttribute ChangeLogFilter changeLogFilter
     ) {
         CursorPageResponseChangeLogDto cursorPageResponseChangeLogDto = changeLogService.getChangeLogs(changeLogFilter);
         return ResponseEntity.status(HttpStatus.OK).body(cursorPageResponseChangeLogDto);
@@ -35,15 +35,15 @@ public class ChangeLogController implements ChangeLogControllerDocs {
 
     @GetMapping("/{id}/diffs")
     public ResponseEntity<List<DiffDto>> getChangeLogDetails(
-            @PathVariable @Positive Long id){
+            @PathVariable  Long id){
         List<DiffDto> diffsByChannelLogId = changeLogService.getDiffsByChannelLogId(id);
         return ResponseEntity.status(HttpStatus.OK).body(diffsByChannelLogId);
     }
 
     @GetMapping("/count")
     public ResponseEntity<Long> getLogCount(
-            @RequestParam LocalDateTime fromDate,
-            @RequestParam LocalDateTime toDate
+            @RequestParam(required = false) LocalDateTime fromDate,
+            @RequestParam(required = false) LocalDateTime toDate
     ){
         Long count = changeLogService.countChangeLogsBetween(fromDate, toDate);
         return ResponseEntity.status(HttpStatus.OK).body(count);
