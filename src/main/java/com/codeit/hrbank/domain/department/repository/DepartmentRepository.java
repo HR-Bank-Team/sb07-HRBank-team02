@@ -18,7 +18,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     // 서비스 단에서 쓸 때 => Pageable pageable = PageRequest.of(0, 5, Sort.by("name").ascending());
     // NOTE: 프로젝션 사용 매핑을 위해 같은 이름이더래도 AS 사용
     @Query("""
-                SELECT d.id AS id, d.name AS name, d.description as description, d.establishedDate AS establishedDate, count(e) AS employeeCount FROM Department d
+                SELECT d.id AS id, d.name AS name, d.description AS description, d.establishedDate AS establishedDate, count(e) AS employeeCount FROM Department d
                 LEFT JOIN Employee e on e.department = d
                 WHERE (:keyword IS NULL OR d.name LIKE %:keyword% OR d.description LIKE %:keyword%)
                 AND (
