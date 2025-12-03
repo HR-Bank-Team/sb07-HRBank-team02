@@ -45,10 +45,8 @@ public class BackupRegister {
                     new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
             return backupMapper.toDto(backup);
         }
-        Backup backup = backupRepository.save(
-                new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
-        );
-        afterRegister(backup);
+
+        Backup backup = afterRegister(ip);
         backup = backupRepository.findById(backup.getId()).orElseThrow();
         latestBackupTime = backup.getEndedAt();
         return backupMapper.toDto(backup);
@@ -65,17 +63,16 @@ public class BackupRegister {
                     new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
             return backupMapper.toDto(backup);
         }
-        Backup backup = backupRepository.save(
-                new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
-        );
-       afterRegister(backup);
+        Backup backup = afterRegister(SYSTEM_USER);
         backup = backupRepository.findById(backup.getId()).orElseThrow();
         latestBackupTime = backup.getEndedAt();
         return backupMapper.toDto(backup);
     }
 
     @Transactional
-    protected Backup afterRegister(Backup backup) throws Exception {
+    protected Backup afterRegister(String ip) throws Exception {
+
+        Backup backup = new Backup(ip,LocalDateTime.now(),LocalDateTime.now(),BackupStatus.IN_PROGRESS,null);
         String fileName = backup.getStartedAt().toString().replace(":", "-") + ".csv";
         List<ExportEmployeeDto> employeeDtos = employeeRepository.findAll().stream().map(exportEmployeeMapper::toDto).toList();
         Long fileSize = fileStorage.saveCsv(fileName, employeeDtos);
