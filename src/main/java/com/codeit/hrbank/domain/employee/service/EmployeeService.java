@@ -138,7 +138,6 @@ public class EmployeeService {
     @Transactional
     public EmployeeDto updateEmployee(Long employeeId, EmployeeUpdateRequest request, MultipartFile file, String clientIp) throws IOException {
 
-        // 이메일 검증
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
 
