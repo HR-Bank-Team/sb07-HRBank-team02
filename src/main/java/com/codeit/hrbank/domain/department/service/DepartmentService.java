@@ -3,6 +3,7 @@ package com.codeit.hrbank.domain.department.service;
 import com.codeit.hrbank.domain.department.dto.*;
 import com.codeit.hrbank.domain.department.entity.Department;
 import com.codeit.hrbank.domain.department.mapper.DepartmentMapper;
+import com.codeit.hrbank.domain.department.projection.DepartmentWithCountEmployee;
 import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -54,7 +55,7 @@ public class DepartmentService {
         String cursorValue = request.cursor();
 
         // repository 호출
-        Slice<Department> departmentSlice = departmentRepository.searchByKeywordWithCursor(
+        Slice<DepartmentWithCountEmployee> departmentSlice = departmentRepository.searchByKeywordWithCursor(
                 request.nameOrDescription(),
                 cursorValue,
                 request.idAfter(),
