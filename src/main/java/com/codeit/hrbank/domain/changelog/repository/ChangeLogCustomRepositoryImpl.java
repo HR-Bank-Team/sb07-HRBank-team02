@@ -72,7 +72,7 @@ public class ChangeLogCustomRepositoryImpl implements ChangeLogCustomRepository 
             if (sortField.equals("at"))
                 query.setParameter("cursor", Instant.parse(cursor).atZone(ZoneId.systemDefault()).toLocalDateTime());
             else query.setParameter("cursor", cursor);
-            query.setParameter("idAfter", idAfter != null ? idAfter : 0L);
+            query.setParameter("idAfter", idAfter);
         }
 
         query.setMaxResults(limit);
