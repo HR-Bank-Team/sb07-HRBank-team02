@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class BackupScheduler {
 
     private final BackupRegister backupRegister;
-    static final long BATCH_INTERVAL = 1000 * 60*2; //1초 1000ms,
+    static final long BATCH_INTERVAL = 1000 * 60*10; //10분마다 호출함
 
     @Scheduled(fixedRate =BATCH_INTERVAL)
     public void createBackup() throws Exception {

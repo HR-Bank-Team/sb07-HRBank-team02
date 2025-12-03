@@ -44,7 +44,7 @@ public class TestFixture {
         return new Department(
                 randomString(),
                 randomString(),
-                randomLocalDateTime()
+                LocalDate.from(randomLocalDateTime())
         );
     }
 

@@ -37,9 +37,48 @@ public class BackupRegister {
     private final ChangeLogRepository changeLogRepository;
     private final BackupMapper backupMapper;
 
-    private String userIp;
     static final String SYSTEM_USER = "SYSTEM";
     private LocalDateTime latestBackupTime = LocalDateTime.MIN;
+
+    @Transactional
+    public BackupDto createBackup(HttpServletRequest request) throws Exception {
+        String ip = request.getRemoteAddr();
+        LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
+        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
+
+        if(!isNecessaryBackup(latestChangeTime)){
+            Backup backup = backupRepository.save(
+                    new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
+            return backupMapper.toDto(backup);
+        }
+        Backup backup = backupRepository.save(
+                new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
+        );
+        afterRegister(backup);
+        backup = backupRepository.findById(backup.getId()).orElseThrow();
+        latestBackupTime = backup.getEndedAt();
+        return backupMapper.toDto(backup);
+    }
+
+    @Transactional
+    public BackupDto createBatchBackup() throws Exception {
+        String ip = SYSTEM_USER;
+        LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
+        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
+
+        if(!isNecessaryBackup(latestChangeTime)){
+            Backup backup = backupRepository.save(
+                    new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
+            return backupMapper.toDto(backup);
+        }
+        Backup backup = backupRepository.save(
+                new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
+        );
+       afterRegister(backup);
+        backup = backupRepository.findById(backup.getId()).orElseThrow();
+        latestBackupTime = backup.getEndedAt();
+        return backupMapper.toDto(backup);
+    }
 
     @Transactional
     protected Backup afterRegister(Backup backup) throws Exception {
@@ -54,51 +93,8 @@ public class BackupRegister {
         return backupRepository.save(backup);
     }
 
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public BackupDto createBackup(HttpServletRequest request) throws Exception {
-        String ip = request.getRemoteAddr();
-        LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
-        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
-
-        if(!isNecessaryBackup(latestChangeTime)){
-            Backup backup = backupRepository.save(
-                    new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
-            return backupMapper.toDto(backup);
-        }
-        Backup backup = backupRepository.save(
-                new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
-        );
-        Long backupId = backup.getId();
-        afterRegister(backup);
-        backup = backupRepository.findById(backupId).orElseThrow();
-        latestBackupTime = backup.getEndedAt();
-        return backupMapper.toDto(backup);
-    }
-
     private boolean isNecessaryBackup(LocalDateTime changeLogTime) {
         return changeLogTime.isAfter(latestBackupTime);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRED)
-    public BackupDto createBatchBackup() throws Exception {
-        String ip = SYSTEM_USER;
-        LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
-        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
-
-        if(!isNecessaryBackup(latestChangeTime)){
-            Backup backup = backupRepository.save(
-                    new Backup(ip, LocalDateTime.now(), LocalDateTime.now(), BackupStatus.SKIPPED, null));
-            return backupMapper.toDto(backup);
-        }
-        Backup backup = backupRepository.save(
-                new Backup(ip,LocalDateTime.now(),null,BackupStatus.IN_PROGRESS,null)
-        );
-        Long backupId = backup.getId();
-       afterRegister(backup);
-        backup = backupRepository.findById(backupId).orElseThrow();
-        latestBackupTime = backup.getEndedAt();
-        return backupMapper.toDto(backup);
     }
 
 }

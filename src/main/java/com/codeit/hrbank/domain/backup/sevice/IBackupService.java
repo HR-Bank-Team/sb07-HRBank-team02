@@ -26,12 +26,9 @@ import java.util.*;
 public class IBackupService implements BackupService{
 
     private final BackupRepository backupRepository;
-    private final BackupScheduler backupScheduler;
     private final BackupMapper backupMapper;
     private final BackupRegister backupRegister;
     private final CursorPageBackupMapper cursorPageBackupMapper;
-
-
 
     @Override
     public CursorPageResponseBackupDto getBackupList(CursorBackupRequestDto cursorBackupRequestDto) {
@@ -78,24 +75,5 @@ public class IBackupService implements BackupService{
     Backup latestBackup = backupRepository.getLatestBackup();
     return backupMapper.toDto(latestBackup);
     }
-
-    private List<Backup> retainCommon(List<Backup> backupList1, List<Backup> backupList2) {
-        if(backupList1== null && backupList2 == null){
-            return null;
-        }
-        if(backupList1 == null){
-            return backupList2;
-        }
-        if(backupList2 == null){
-            return backupList1;
-        }
-        Set<Backup> backupSet = new HashSet<>(backupList1);
-        backupSet.retainAll(backupList2);
-        return backupSet.stream().toList();
-    }
-
-
-
-
 
 }
