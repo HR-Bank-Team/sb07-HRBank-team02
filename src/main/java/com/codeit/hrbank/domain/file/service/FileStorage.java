@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -38,6 +39,8 @@ public class FileStorage {
     @Transactional
     public Long saveCsv(String fileName, List<ExportEmployeeDto> exportEmployeeDtos) throws IOException {
         Path storagePath = Path.of(backupFilePath,fileName);
+        if(!Files.exists(storagePath)) return extendCsv(storagePath,exportEmployeeDtos);
+
         BufferedWriter bw =Files.newBufferedWriter(storagePath);
 
             bw.write("ID,employeeNumber,name,email,department,position,hiredate,status");
@@ -125,6 +128,28 @@ public class FileStorage {
     private Path resolvePathFromId(Long id){
         String fileName = fileRepository.findById(id).orElseThrow().getName();
         return Path.of(profilePath,fileName);
+    }
+
+    private Long extendCsv(Path storagePath, List<ExportEmployeeDto> exportEmployeeDtos ) throws IOException {
+
+        BufferedWriter bw =Files.newBufferedWriter(storagePath,StandardOpenOption.APPEND);
+        for (ExportEmployeeDto dto : exportEmployeeDtos) {
+            String line = MessageFormat.format("{0},{1},{2},{3},{4},{5},{6},{7}",
+                    dto.id(),
+                    dto.employeeNumber(),
+                    dto.name(),
+                    dto.email(),
+                    dto.departmentName(),
+                    dto.position(),
+                    dto.hireDate(),
+                    dto.status()
+            );
+            bw.write(line);
+            bw.newLine();
+        }
+        bw.flush();
+        bw.close();
+        return Files.size(storagePath);
     }
 
 }

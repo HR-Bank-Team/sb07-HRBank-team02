@@ -8,11 +8,14 @@ import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.ExportEmployeeMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
 import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
+import com.codeit.hrbank.domain.employee.entity.Employee;
 import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
 import com.codeit.hrbank.domain.file.entity.File;
 import com.codeit.hrbank.domain.file.repository.FileRepository;
 import com.codeit.hrbank.domain.file.service.FileStorage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,7 @@ public class BackupRegister {
 
     static final String SYSTEM_USER = "SYSTEM";
     private LocalDateTime latestBackupTime = LocalDateTime.MIN;
+    static final int PAGE_SIZE = 1000;
 
     @Transactional
     public BackupDto createBackup(String ip) {
@@ -61,10 +65,19 @@ public class BackupRegister {
 
         Backup backup = new Backup(ip,LocalDateTime.now(),LocalDateTime.now(),BackupStatus.IN_PROGRESS,null);
         String fileName = backup.getStartedAt().toString().replace(":", "-") + ".csv";
-        List<ExportEmployeeDto> employeeDtos = employeeRepository.findAll().stream().map(exportEmployeeMapper::toDto).toList();
 
         try {
-            Long fileSize = fileStorage.saveCsv(fileName, employeeDtos);
+
+            int pageNum = 0;
+            Page<Employee> employeePage;
+            Long fileSize;
+            do {
+                employeePage = employeeRepository.findAll(PageRequest.of(pageNum, PAGE_SIZE));
+                List<ExportEmployeeDto> dtoList = employeePage.getContent().stream().map(exportEmployeeMapper::toDto).toList();
+                fileSize =fileStorage.saveCsv(fileName,dtoList);
+                pageNum++;
+            }
+            while(employeePage.hasNext());
             File file = fileRepository.save(new File(fileName, "text/csv", fileSize));
             backup.backupComplete(file);
         }
