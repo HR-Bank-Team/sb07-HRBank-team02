@@ -151,22 +151,33 @@ public class EmployeeService {
 
         employeeRepository.deleteById(employeeId);
     }
-
-    // =====================================================================
-    // 직원 "수" 조회 (LocalDate 적용)
-    // =====================================================================
-    public EmployeeCountDto getEmployeeCount(
+    // 직원 수 조회
+    public long getEmployeeCount(
             EmployeeStatus status,
             LocalDate fromDate,
             LocalDate toDate
     ) {
-        long count = employeeRepository.countByStatusAndHireDateBetween(
-                status,
-                fromDate,
-                toDate
-        );
-        return new EmployeeCountDto(count);
+        if (fromDate == null && toDate == null) {
+            fromDate = LocalDate.of(1900, 1, 1);
+            toDate = LocalDate.now();
+        } else if (fromDate != null && toDate == null) {
+            toDate = LocalDate.now();
+        } else if (fromDate == null && toDate != null) {
+            fromDate = LocalDate.of(1900, 1, 1);
+        }
+
+        if (status != null) {
+            return employeeRepository.countByStatusAndHireDateBetween(
+                    status, fromDate, toDate
+            );
+        } else {
+            return employeeRepository.countByHireDateBetween(
+                    fromDate, toDate
+            );
+        }
     }
+
+
 
     // =====================================================================
     // 직원 "분포" 조회
