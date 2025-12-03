@@ -56,7 +56,7 @@ public class ChangeLogService {
 
         List<Diff> diffs = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : diffMapData.entrySet()) {
-            diffs.add(new Diff(entry.getKey(), entry.getValue().get(0), entry.getValue().get(0), savedLog));
+            diffs.add(new Diff(entry.getKey(), entry.getValue().get(0), entry.getValue().get(1), savedLog));
         }
         diffRepository.saveAll(diffs);
     }
