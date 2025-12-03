@@ -87,7 +87,6 @@ public class ChangeLogService {
                 request.getIdAfter(),
                 request.getSize()+1);
 
-        System.out.println(changeLogs.size());
         boolean hasNext = changeLogs.size() > request.getSize();
         int endIndex = Math.min(changeLogs.size(), request.getSize());
         List<ChangeLog> result = changeLogs.subList(0, endIndex);

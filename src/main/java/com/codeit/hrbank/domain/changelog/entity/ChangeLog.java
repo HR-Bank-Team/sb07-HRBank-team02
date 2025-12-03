@@ -8,10 +8,9 @@ import jakarta.persistence.Enumerated;
 
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+
 
 @Entity
 @Table(name = "change_logs")
