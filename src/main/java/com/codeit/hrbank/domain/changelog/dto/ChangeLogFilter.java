@@ -1,6 +1,7 @@
 package com.codeit.hrbank.domain.changelog.dto;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,9 +18,9 @@ public class ChangeLogFilter {
     private String memo;          // 메모 내용 필터
     private String ipAddress;
 
-    private String sortField;       // 정렬 필드, 기본값: at
-    private String sortDirection;  // 정렬 방향, 기본값: desc-> 최신순
-    private Integer size;           // 조회 개수, 기본값: 30
+    @NotNull private String sortField;       // 정렬 필드, 기본값: at
+    @NotNull private String sortDirection;  // 정렬 방향, 기본값: desc-> 최신순
+    @NotNull private Integer size;           // 조회 개수, 기본값: 30
 
     private LocalDateTime atFrom;
     private LocalDateTime atTo;
