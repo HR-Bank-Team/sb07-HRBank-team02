@@ -2,7 +2,11 @@ package com.codeit.hrbank.employee.integration.service;
 
 import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
+import com.codeit.hrbank.domain.employee.dto.EmployeeCreateRequest;
+import com.codeit.hrbank.domain.employee.dto.EmployeeDistributionDto;
+import com.codeit.hrbank.domain.employee.dto.EmployeeDto;
 import com.codeit.hrbank.domain.employee.service.EmployeeService;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,6 +29,15 @@ class EmployeeServiceIntegrationTest {
     @Autowired
     private EmployeeService employeeService;
 
+    private MockMultipartFile mockFile() {
+        return new MockMultipartFile(
+                "file",
+                "profile.png",
+                "image/png",
+                "dummy image".getBytes()
+        );
+    }
+
     @DisplayName("직원 등록 테스트")
     @Nested
     class CreateEmployee {
@@ -43,15 +56,8 @@ class EmployeeServiceIntegrationTest {
                             "직원 생성"
                     );
 
-            MockMultipartFile file = new MockMultipartFile(
-                    "file",
-                    "profile.png",
-                    "image/png",
-                    "dummy image data".getBytes()
-            );
-
             // when
-            EmployeeDto employee = employeeService.createEmployee(request, file, "127.0.0.1");
+            EmployeeDto employee = employeeService.createEmployee(request, mockFile(), "127.0.0.1");
 
             // then
             assertEquals(request.name(), employee.name());
@@ -86,16 +92,10 @@ class EmployeeServiceIntegrationTest {
                             "직원 생성"
                     );
 
-            MockMultipartFile file = new MockMultipartFile(
-                    "file",
-                    "profile.png",
-                    "image/png",
-                    "dummy image data".getBytes()
-            );
 
             // when & then
-            employeeService.createEmployee(request, file, "127.0.0.1");
-            assertThrows(IllegalArgumentException.class, () -> employeeService.createEmployee(request2, file, "127.0.0.1"));
+            employeeService.createEmployee(request, mockFile(), "127.0.0.1");
+            assertThrows(IllegalArgumentException.class, () -> employeeService.createEmployee(request2, mockFile(), "127.0.0.1"));
         }
     }
 
@@ -103,7 +103,7 @@ class EmployeeServiceIntegrationTest {
     @Nested
     class GetEmployee {
         @Test
-        @DisplayName("직원 단일 조회 - 성공 ")
+        @DisplayName("직원 단일 조회 - 성공")
         void getEmployee() throws IOException {
 
             // given
@@ -117,14 +117,8 @@ class EmployeeServiceIntegrationTest {
                             "직원 생성"
                     );
 
-            MockMultipartFile file = new MockMultipartFile(
-                    "file",
-                    "profile.png",
-                    "image/png",
-                    "dummy image data".getBytes()
-            );
 
-            Long id = employeeService.createEmployee(request, file, "127.0.0.1").id();
+            Long id = employeeService.createEmployee(request, mockFile(), "127.0.0.1").id();
 
             // when
             EmployeeDto employee = employeeService.getEmployee(id);
@@ -229,15 +223,8 @@ class EmployeeServiceIntegrationTest {
                     "직원 정보 수정"
             );
 
-            MockMultipartFile file = new MockMultipartFile(
-                    "file",
-                    "profile.png",
-                    "image/png",
-                    "dummy image data".getBytes()
-            );
-
             // when
-            EmployeeDto employeeDto = employeeService.updateEmployee(401L, request, file, "127.0.0.1");
+            EmployeeDto employeeDto = employeeService.updateEmployee(401L, request, mockFile(), "127.0.0.1");
 
             // then
             assertEquals(request.name(), employeeDto.name());
@@ -282,15 +269,27 @@ class EmployeeServiceIntegrationTest {
     class GetEmployeeCount {
 
         @Test
-        @DisplayName("직원 수 조회")
-        void getEmployeeCount() {
-            // given
+        @DisplayName("직원 수 조회 - 성공")
+        void getEmployeeCount() throws IOException {
 
+            EmployeeCreateRequest req1 = new EmployeeCreateRequest(
+                    "직원1", "a@a.com", 2L, "신입", LocalDate.now(), "메모"
+            );
 
-            // when
+            EmployeeCreateRequest req2 = new EmployeeCreateRequest(
+                    "직원2", "b@a.com", 2L, "신입", LocalDate.now(), "메모"
+            );
 
+            employeeService.createEmployee(req1, mockFile(), "127.0.0.1");
+            employeeService.createEmployee(req2, mockFile(), "127.0.0.1");
 
-            // then
+            long count = employeeService.getEmployeeCount(
+                    null,
+                    LocalDate.now().minusDays(1),
+                    LocalDate.now().plusDays(1)
+            );
+
+            assertEquals(2L, count);
         }
     }
 
@@ -299,15 +298,40 @@ class EmployeeServiceIntegrationTest {
     class GetEmployeeDistribution {
 
         @Test
-        @DisplayName("직원 분포 조회")
-        void getEmployeeDistribution() {
-            // given
+        @DisplayName("직원 분포 조회 - 부서별 분포의 합이 전체 직원 수와 같다")
+        void getEmployeeDistribution_department() throws IOException {
+            // given - 직원 몇 명은 테스트에서 직접 추가해 놓자 (있어도 되고, 이미 DB에 있어도 상관 없음)
+            employeeService.createEmployee(
+                    new EmployeeCreateRequest("테스트직원1", "dist1@test.com", 2L, "신입", LocalDate.now(), "테스트"),
+                    mockFile(),
+                    "127.0.0.1"
+            );
 
+            employeeService.createEmployee(
+                    new EmployeeCreateRequest("테스트직원2", "dist2@test.com", 2L, "신입", LocalDate.now(), "테스트"),
+                    mockFile(),
+                    "127.0.0.1"
+            );
 
-            // when
+            // when - 부서별 직원 분포 조회
+            // 재직 중인 경우 분포 조회
+            List<EmployeeDistributionDto> result =
+                    employeeService.getEmployeeDistribution("department", EmployeeStatus.ACTIVE);
 
+            // 전체 직원 수
+            long totalCount = employeeService.getEmployeeCount(EmployeeStatus.ACTIVE, null, null);
+
+            // 분포에서 나온 count 합
+            long sumOfDistribution = result.stream()
+                    .mapToLong(EmployeeDistributionDto::count)
+                    .sum();
 
             // then
+            // 1) 분포 결과가 비어있진 않아야 하고
+            assertFalse(result.isEmpty());
+
+            // 2) 분포의 count 합 = 전체 직원 수 여야 한다
+            assertEquals(totalCount, sumOfDistribution);
         }
     }
 
