@@ -20,7 +20,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     @Query("""
                 SELECT d.id AS id, d.name AS name, d.description AS description, d.establishedDate AS establishedDate, count(e) AS employeeCount FROM Department d
                 LEFT JOIN Employee e on e.department = d
-                WHERE (:nameOrDescription IS NULL OR d.name LIKE %:nameOrDescription% OR d.description LIKE %:nameOrDescription%)
+                WHERE (:keyword IS NULL OR d.name LIKE %:keyword% OR d.description LIKE %:keyword%)
                 AND (
                     :cursorValue IS NULL OR
                     (:sortField = 'name' AND (d.name > :cursorValue OR (d.name = :cursorValue AND d.id > :idAfter))) OR
@@ -30,11 +30,20 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
                 GROUP BY d.id, d.name, d.description, d.establishedDate
             """)
     Slice<DepartmentWithCountEmployee> searchByKeywordWithCursor(
-            @Param("nameOrDescription") String nameOrDescription,
+            @Param("keyword") String nameOrDescription,
             @Param("cursorValue") String cursorValue, // 정렬 컬럼 마지막 값
             @Param("idAfter") Long idAfter,         // 마지막 id
             @Param("sortField") String sortField, // 'name' 또는 'establishedDate'
             Pageable pageable);
 
     boolean existsByName(String name);
+
+  @Query("""
+    SELECT COUNT(d)
+    FROM Department d
+    WHERE (:keyword IS NULL
+           OR d.name LIKE %:keyword%
+           OR d.description LIKE %:keyword%)
+  """)
+  long countByKeyword(@Param("keyword") String nameOrDescription);
 }

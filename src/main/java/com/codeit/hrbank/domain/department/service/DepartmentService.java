@@ -6,10 +6,8 @@ import com.codeit.hrbank.domain.department.mapper.DepartmentMapper;
 import com.codeit.hrbank.domain.department.projection.DepartmentWithCountEmployee;
 import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,12 +43,8 @@ public class DepartmentService {
     @Transactional(readOnly = true)
     public CursorPageResponseDepartmentDto getAllDepartments(CursorPageRequestDepartmentDto request) {
         validateSortField(request.sortField());
-
-        // Pageable + 기본 tie-breaker
-        Pageable pageable = PageRequest.of(0, request.size(),
-                Sort.by(request.sortDirection(), request.sortField())
-                        .and(Sort.by(request.sortDirection(), "id")));
-
+        Pageable pageable = request.toPageable();
+        long totalCount = departmentRepository.countByKeyword(request.nameOrDescription());
 
         // repository 호출
         Slice<DepartmentWithCountEmployee> departmentSlice = departmentRepository.searchByKeywordWithCursor(
@@ -86,7 +80,7 @@ public class DepartmentService {
                 nextCursor,
                 nextIdAfter,
                 request.size(),
-                (long) content.size(),       // totalElements (cursor 방식에서는 보통 count 안함)
+                totalCount,
                 departmentSlice.hasNext()
         );
     }
