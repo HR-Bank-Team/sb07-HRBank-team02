@@ -6,12 +6,12 @@ import lombok.Getter;
 @Getter
 public class DeleteLogDetailCommand {
 
-    private String hireDate;
-    private String name;
-    private String position;
-    private String department;
-    private String email;
-    private String status;
+    private final String hireDate;
+    private final String name;
+    private final String position;
+    private final String department;
+    private final String email;
+    private final String status;
 
     public DeleteLogDetailCommand(
             Employee employee){

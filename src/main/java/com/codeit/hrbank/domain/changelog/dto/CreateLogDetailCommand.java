@@ -6,13 +6,13 @@ import lombok.Getter;
 @Getter
 public class CreateLogDetailCommand {
 
-    private String hireDate;
-    private String name;
-    private String position;
-    private String department;
-    private String email;
-    private String employeeNumber;
-    private String status;
+    private final String hireDate;
+    private final String name;
+    private final String position;
+    private final String department;
+    private final String email;
+    private final String employeeNumber;
+    private final String status;
 
     public CreateLogDetailCommand(
             Employee employee){
