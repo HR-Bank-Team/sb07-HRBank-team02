@@ -3,7 +3,6 @@ package com.codeit.hrbank.domain.employee.controller.docs;
 import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.entity.Employee;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
-import com.codeit.hrbank.domain.employee.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -11,15 +10,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -141,7 +138,7 @@ public interface EmployeeControllerDocs {
             )
 
     })
-    ResponseEntity<EmployeeDto> createEmployee(EmployeeCreateRequest request, MultipartFile file);
+    ResponseEntity<EmployeeDto> createEmployee(EmployeeCreateRequest request, MultipartFile file, HttpServletRequest servletRequest) throws IOException;
 // 직원 상세 조회
     @Operation(
             summary = "직원 상세 조회",
@@ -218,7 +215,7 @@ public interface EmployeeControllerDocs {
     })
 
 
-    ResponseEntity<Void> deleteEmployee(Long id);
+    ResponseEntity<Void> deleteEmployee(Long id, HttpServletRequest servletRequest) throws IOException;
 //직원 수정
     @Operation(summary = "직원 수정", description = "직원의 정보를 수정합니다.")
     @ApiResponses(value = {
@@ -294,7 +291,7 @@ public interface EmployeeControllerDocs {
             )
     })
 
-    ResponseEntity<EmployeeDto> updateEmployee(Long id, EmployeeUpdateRequest request, MultipartFile file);
+    ResponseEntity<EmployeeDto> updateEmployee(Long id, EmployeeUpdateRequest request, MultipartFile file, HttpServletRequest servletRequest) throws IOException;
 //직원 증감 추이
     @Operation(summary = "직원 증감 추이", description = "직원의 시간별 증감 추이를 조회합니다.")
     @ApiResponses(value = {
