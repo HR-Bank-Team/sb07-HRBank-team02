@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class BackupTestRepository {
+public class BackSliceRepository {
 
 
     @PersistenceContext
