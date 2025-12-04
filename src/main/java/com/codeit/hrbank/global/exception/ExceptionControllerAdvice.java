@@ -57,7 +57,8 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public ErrorResponse exception(Exception e){
-        return new ErrorResponse(LocalDateTime.now(),400,"잘못된 요청입니다.",null);
+        log.error(e.getMessage());
+        return new ErrorResponse(LocalDateTime.now(),500,"잘못된 요청입니다.",null);
     }
 
 }
