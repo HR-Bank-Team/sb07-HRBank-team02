@@ -126,8 +126,30 @@ public class FileStorage {
 
 
     private Path resolvePathFromId(Long id){
+        File file = fileRepository.findById(id).orElseThrow();
+        return switch (file.getType()) {
+            case "text/csv" -> resolveBackupPath(id);
+            case "text/plain" -> resolveErrorLogPath(id);
+            default -> resolveProfilePath(id);
+        };
+    }
+
+    private Path resolveProfilePath(Long id){
         String fileName = fileRepository.findById(id).orElseThrow().getName();
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
+        String fileNameWithoutExtension = fileName.substring(0,fileName.lastIndexOf("."));
+        fileName = fileNameWithoutExtension+"_" + id.toString() + "." + fileExtension;
         return Path.of(profilePath,fileName);
+    }
+
+    private Path resolveErrorLogPath(Long id){
+        String fileName = fileRepository.findById(id).orElseThrow().getName();
+        return Path.of(backupErrorLogPath,fileName);
+    }
+
+    private Path resolveBackupPath(Long id){
+        String fileName = fileRepository.findById(id).orElseThrow().getName();
+        return Path.of(backupFilePath,fileName);
     }
 
     private Long extendCsv(Path storagePath, List<ExportEmployeeDto> exportEmployeeDtos ) throws IOException {
