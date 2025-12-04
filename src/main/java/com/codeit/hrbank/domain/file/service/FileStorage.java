@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -38,6 +39,8 @@ public class FileStorage {
     @Transactional
     public Long saveCsv(String fileName, List<ExportEmployeeDto> exportEmployeeDtos) throws IOException {
         Path storagePath = Path.of(backupFilePath,fileName);
+        if(Files.exists(storagePath)) return extendCsv(storagePath,exportEmployeeDtos);
+
         BufferedWriter bw =Files.newBufferedWriter(storagePath);
 
             bw.write("ID,employeeNumber,name,email,department,position,hiredate,status");
@@ -123,8 +126,52 @@ public class FileStorage {
 
 
     private Path resolvePathFromId(Long id){
+        File file = fileRepository.findById(id).orElseThrow();
+        return switch (file.getType()) {
+            case "text/csv" -> resolveBackupPath(id);
+            case "text/plain" -> resolveErrorLogPath(id);
+            default -> resolveProfilePath(id);
+        };
+    }
+
+    private Path resolveProfilePath(Long id){
         String fileName = fileRepository.findById(id).orElseThrow().getName();
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
+        String fileNameWithoutExtension = fileName.substring(0,fileName.lastIndexOf("."));
+        fileName = fileNameWithoutExtension+"_" + id.toString() + "." + fileExtension;
         return Path.of(profilePath,fileName);
+    }
+
+    private Path resolveErrorLogPath(Long id){
+        String fileName = fileRepository.findById(id).orElseThrow().getName();
+        return Path.of(backupErrorLogPath,fileName);
+    }
+
+    private Path resolveBackupPath(Long id){
+        String fileName = fileRepository.findById(id).orElseThrow().getName();
+        return Path.of(backupFilePath,fileName);
+    }
+
+    private Long extendCsv(Path storagePath, List<ExportEmployeeDto> exportEmployeeDtos ) throws IOException {
+
+        BufferedWriter bw =Files.newBufferedWriter(storagePath,StandardOpenOption.APPEND);
+        for (ExportEmployeeDto dto : exportEmployeeDtos) {
+            String line = MessageFormat.format("{0},{1},{2},{3},{4},{5},{6},{7}",
+                    dto.id(),
+                    dto.employeeNumber(),
+                    dto.name(),
+                    dto.email(),
+                    dto.departmentName(),
+                    dto.position(),
+                    dto.hireDate(),
+                    dto.status()
+            );
+            bw.write(line);
+            bw.newLine();
+        }
+        bw.flush();
+        bw.close();
+        return Files.size(storagePath);
     }
 
 }

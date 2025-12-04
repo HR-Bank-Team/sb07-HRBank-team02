@@ -8,17 +8,13 @@ import com.codeit.hrbank.domain.backup.entity.BackupStatus;
 import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.CursorPageBackupMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
-
-import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 
 @Service
@@ -31,6 +27,7 @@ public class IBackupService implements BackupService{
     private final CursorPageBackupMapper cursorPageBackupMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public CursorPageResponseBackupDto getBackupList(CursorBackupRequestDto cursorBackupRequestDto) {
 
         String worker = cursorBackupRequestDto.worker();
