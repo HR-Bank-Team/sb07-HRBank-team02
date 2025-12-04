@@ -167,7 +167,14 @@ class EmployeeServiceIntegrationTest {
         @DisplayName("직원 수 조회")
         void getEmployeeCount() {
             // given
-
+            EmployeeCreateRequest request1 = new EmployeeCreateRequest(
+                    "홍길동",
+                    "rlfehd3333@test.com",
+                    1L,
+                    "신입 개발자",
+                    LocalDate.now(),
+                    "신입"
+            );
 
             // when
 
@@ -197,4 +204,6 @@ class EmployeeServiceIntegrationTest {
     @Nested
     class GetEmployeeTrend {
     }
+
+
 }
