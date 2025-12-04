@@ -1,5 +1,8 @@
 package com.codeit.hrbank.domain.employee.service;
 
+import com.codeit.hrbank.domain.changelog.dto.CreateLogDetailCommand;
+import com.codeit.hrbank.domain.changelog.dto.DeleteLogDetailCommand;
+import com.codeit.hrbank.domain.changelog.dto.DiffCommand;
 import com.codeit.hrbank.domain.changelog.service.ChangeLogService;
 import com.codeit.hrbank.domain.department.entity.Department;
 import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
@@ -24,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -79,7 +81,12 @@ public class EmployeeService {
         );
 
         // 직원 생성 로그 저장
-        changeLogService.recordLogByAddEmployee(employeeNumber, clientIp, request.memo(), newEmployee);
+        changeLogService.recordLogByAddEmployee(
+                employeeNumber,
+                clientIp,
+                request.memo(),
+                new CreateLogDetailCommand(newEmployee)
+        );
 
         employeeRepository.save(newEmployee);
         return employeeMapper.toDto(newEmployee);
@@ -184,28 +191,34 @@ public class EmployeeService {
         employeeRepository.save(employee);
 
         // 직원 수정 정보 로그 저장
-        Map<String, List<String>> diff = new ConcurrentHashMap<>();
+        List<DiffCommand> diffs = new ArrayList<>();
 
         if(!beforeEmployeeInfo.hireDate().equals(employee.getHireDate())){
-            diff.put("입사일", List.of(beforeEmployeeInfo.hireDate().toString(), employee.getHireDate().toString()));
+            DiffCommand changeHireDate = new DiffCommand("입사일",beforeEmployeeInfo.hireDate().toString(), employee.getHireDate().toString());
+            diffs.add(changeHireDate);
         }
         if(!beforeEmployeeInfo.name().equals(employee.getName())) {
-            diff.put("이름", List.of(beforeEmployeeInfo.name(), employee.getName()));
+            DiffCommand changeName = new DiffCommand("이름", beforeEmployeeInfo.name(), employee.getName());
+            diffs.add(changeName);
         }
         if(!beforeEmployeeInfo.position().equals(employee.getPosition())) {
-            diff.put("직함",List.of(beforeEmployeeInfo.position(), employee.getPosition()));
+            DiffCommand changePosition = new DiffCommand("직함", beforeEmployeeInfo.position(), employee.getPosition());
+            diffs.add(changePosition);
         }
         if(!beforeEmployeeInfo.departmentId().equals(employee.getDepartment().getId())){
-            diff.put("부서명", List.of(beforeEmployeeInfo.departmentName(), employee.getDepartment().getName()));
+            DiffCommand changeDepartmentName = new DiffCommand("부서명", beforeEmployeeInfo.departmentName(), employee.getDepartment().getName());
+            diffs.add(changeDepartmentName);
         }
         if(!beforeEmployeeInfo.email().equals(employee.getEmail())){
-            diff.put("이메일", List.of(beforeEmployeeInfo.email(), employee.getEmail()));
+            DiffCommand changeEmail = new DiffCommand("이메일", beforeEmployeeInfo.email(), employee.getEmail());
+            diffs.add(changeEmail);
         }
         if(!beforeEmployeeInfo.status().equals(employee.getStatus())){
-            diff.put("상태", List.of(beforeEmployeeInfo.status().toString(), employee.getStatus().toString()));
+            DiffCommand changeStatus = new DiffCommand("상태", beforeEmployeeInfo.status().toString(), employee.getStatus().toString());
+            diffs.add(changeStatus);
         }
 
-        changeLogService.recordLogByUpdateEmployee(employee.getEmployeeNumber(), clientIp, request.memo(), diff);
+        changeLogService.recordLogByUpdateEmployee(employee.getEmployeeNumber(), clientIp, request.memo(), diffs);
 
         return employeeMapper.toDto(employee);
     }
@@ -217,7 +230,11 @@ public class EmployeeService {
                 .orElseThrow(() -> new NoSuchElementException("직원이 존재하지 않습니다."));
 
         // 직원 삭제 로그 저장
-        changeLogService.recordLogByDeleteEmployee(employee.getEmployeeNumber(), clientIp, employee);
+        changeLogService.recordLogByDeleteEmployee(
+                employee.getEmployeeNumber(),
+                clientIp,
+                new DeleteLogDetailCommand(employee)
+        );
 
         File profile = employee.getProfile();
 
