@@ -18,7 +18,7 @@ public class DeleteLogDetailCommand {
         this.hireDate = employee.getHireDate().toString();
         this.name = employee.getName();
         this.position = employee.getPosition();
-        this.department = employee.getDepartment().toString();
+        this.department = employee.getDepartment().getName();
         this.email = employee.getEmail();
         this.status = employee.getStatus().toString();
     }
