@@ -20,19 +20,19 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     @Query("""
                 SELECT d.id AS id, d.name AS name, d.description AS description, d.establishedDate AS establishedDate, count(e) AS employeeCount FROM Department d
                 LEFT JOIN Employee e on e.department = d
-                WHERE (:keyword IS NULL OR d.name LIKE %:keyword% OR d.description LIKE %:keyword%)
+                WHERE (:nameOrDescription IS NULL OR d.name LIKE %:nameOrDescription% OR d.description LIKE %:nameOrDescription%)
                 AND (
-                    :lastValue IS NULL OR
-                    (:sortField = 'name' AND (d.name > :lastValue OR (d.name = :lastValue AND d.id > :lastId))) OR
-                    (:sortField = 'establishedDate' AND (d.establishedDate > CAST(:lastValue AS java.time.LocalDate) OR 
-                          (d.establishedDate = CAST(:lastValue AS java.time.LocalDate) AND d.id > :lastId)))
+                    :cursorValue IS NULL OR
+                    (:sortField = 'name' AND (d.name > :cursorValue OR (d.name = :cursorValue AND d.id > :idAfter))) OR
+                    (:sortField = 'establishedDate' AND (d.establishedDate > CAST(:cursorValue AS java.time.LocalDate) OR 
+                          (d.establishedDate = CAST(:cursorValue AS java.time.LocalDate) AND d.id > :idAfter)))
                 )
                 GROUP BY d.id, d.name, d.description, d.establishedDate
             """)
     Slice<DepartmentWithCountEmployee> searchByKeywordWithCursor(
-            @Param("keyword") String keyword,
-            @Param("lastValue") String lastValue, // 정렬 컬럼 마지막 값
-            @Param("lastId") Long lastId,         // 마지막 id
+            @Param("nameOrDescription") String nameOrDescription,
+            @Param("cursorValue") String cursorValue, // 정렬 컬럼 마지막 값
+            @Param("idAfter") Long idAfter,         // 마지막 id
             @Param("sortField") String sortField, // 'name' 또는 'establishedDate'
             Pageable pageable);
 
