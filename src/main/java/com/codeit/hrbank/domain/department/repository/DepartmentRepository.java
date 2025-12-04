@@ -37,4 +37,13 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             Pageable pageable);
 
     boolean existsByName(String name);
+
+  @Query("""
+    SELECT COUNT(d)
+    FROM Department d
+    WHERE (:keyword IS NULL
+           OR d.name LIKE %:keyword%
+           OR d.description LIKE %:keyword%)
+  """)
+  long countByKeyword(@Param("keyword") String keyword);
 }

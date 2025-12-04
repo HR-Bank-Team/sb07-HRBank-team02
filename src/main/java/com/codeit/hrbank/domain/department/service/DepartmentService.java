@@ -44,6 +44,7 @@ public class DepartmentService {
     public CursorPageResponseDepartmentDto getAllDepartments(CursorPageRequestDepartmentDto request) {
         validateSortField(request.sortField());
         Pageable pageable = request.toPageable();
+        long totalCount = departmentRepository.countByKeyword(request.nameOrDescription());
 
         // repository 호출
         Slice<DepartmentWithCountEmployee> departmentSlice = departmentRepository.searchByKeywordWithCursor(
@@ -79,7 +80,7 @@ public class DepartmentService {
                 nextCursor,
                 nextIdAfter,
                 request.size(),
-                (long) content.size(),       // totalElements (cursor 방식에서는 보통 count 안함)
+                totalCount,
                 departmentSlice.hasNext()
         );
     }
