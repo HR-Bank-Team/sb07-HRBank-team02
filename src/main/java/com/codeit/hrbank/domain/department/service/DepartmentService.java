@@ -51,13 +51,11 @@ public class DepartmentService {
                 Sort.by(request.sortDirection(), request.sortField())
                         .and(Sort.by(request.sortDirection(), "id")));
 
-        // cursor 값 그대로 사용
-        String cursorValue = request.cursor();
 
         // repository 호출
         Slice<DepartmentWithCountEmployee> departmentSlice = departmentRepository.searchByKeywordWithCursor(
                 request.nameOrDescription(),
-                cursorValue,
+                request.cursor(),
                 request.idAfter(),
                 request.sortField(),
                 pageable
