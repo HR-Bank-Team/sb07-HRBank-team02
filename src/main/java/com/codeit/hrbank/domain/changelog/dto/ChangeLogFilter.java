@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 
 @Getter
@@ -18,12 +17,15 @@ public class ChangeLogFilter {
     private String memo;
     private String ipAddress;
 
-    @NotNull private String sortField;
-    @NotNull private String sortDirection;
-    @NotNull private Integer size;
+    @NotNull
+    private String sortField;
+    @NotNull
+    private String sortDirection;
+    @NotNull
+    private Integer size;
 
-    private LocalDateTime atFrom;
-    private LocalDateTime atTo;
+    private OffsetDateTime atFrom;
+    private OffsetDateTime atTo;
 
     private String cursor;
     private Long idAfter;

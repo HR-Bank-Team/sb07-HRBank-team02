@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Tag(name = "Change Log", description = "직원 정보 수정 이력 관리 API")
@@ -124,5 +124,5 @@ public interface ChangeLogControllerDocs {
                     )
             }
     )
-    ResponseEntity<Long> getLogCount(LocalDateTime fromDate, LocalDateTime toDate);
+    ResponseEntity<Long> getLogCount(OffsetDateTime fromDate, OffsetDateTime toDate);
 }
