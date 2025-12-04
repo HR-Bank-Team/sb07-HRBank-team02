@@ -42,9 +42,9 @@ public class DepartmentService {
     //부서 목록 조회
     @Transactional(readOnly = true)
     public CursorPageResponseDepartmentDto getAllDepartments(CursorPageRequestDepartmentDto request) {
-        validateSortField(request.sortField());
-        Pageable pageable = request.toPageable();
-        long totalCount = departmentRepository.countByKeyword(request.nameOrDescription());
+      validateSortField(request.sortField());
+      Pageable pageable = request.toPageable();
+      long totalCount = departmentRepository.countByKeyword(request.nameOrDescription());
 
         // repository 호출
         Slice<DepartmentWithCountEmployee> departmentSlice = departmentRepository.searchByKeywordWithCursor(
@@ -104,8 +104,15 @@ public class DepartmentService {
 
     // 정렬 필드 검증 메서드 분리
     private void validateSortField(String sortField) {
-        if (!sortField.equals("name") && !sortField.equals("establishedDate")) {
-            throw new IllegalArgumentException("정렬 기준은 null, name, establishedDate 중 하나여야 합니다.");
-        }
+      if(sortField == null){
+        sortField = "establishedDate";
+      }
+      switch (sortField) {
+        case "name" :
+        case "establishedDate" :
+          break;
+        default:
+          throw new IllegalArgumentException("정렬 기준은 null, name, establishedDate 중 하나여야 합니다.");
+      }
     }
 }
