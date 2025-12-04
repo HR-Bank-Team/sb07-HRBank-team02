@@ -5,11 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class DiffDto {
-
+public class DiffCommand {
     private String propertyName;
     private String before;
     private String after;
-
-
 }
