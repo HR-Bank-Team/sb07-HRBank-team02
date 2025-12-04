@@ -11,6 +11,6 @@ public record CursorBackupRequestDto(
         LocalDateTime startedAtTo,
         String sortField,
         String sortDirection,
-        Long size
+        int size
 ) {
 }

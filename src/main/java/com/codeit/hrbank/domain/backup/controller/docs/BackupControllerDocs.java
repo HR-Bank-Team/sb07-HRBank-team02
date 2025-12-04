@@ -78,7 +78,7 @@ public interface BackupControllerDocs {
                                                               @RequestParam(required = false) LocalDateTime startedAtTo,
                                                               @RequestParam(required = false) String sortDirection,
                                                               @RequestParam(required = false) String sortField,
-                                                              @RequestParam(required = false) Long size
+                                                              @RequestParam(required = false) int size
     );
 
     @Operation(summary = "백업 생성")

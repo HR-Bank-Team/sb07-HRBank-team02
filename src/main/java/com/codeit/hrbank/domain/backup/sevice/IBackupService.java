@@ -10,13 +10,18 @@ import com.codeit.hrbank.domain.backup.mapper.CursorPageBackupMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IBackupService implements BackupService{
@@ -30,17 +35,25 @@ public class IBackupService implements BackupService{
     @Transactional(readOnly = true)
     public CursorPageResponseBackupDto getBackupList(CursorBackupRequestDto cursorBackupRequestDto) {
 
+
         String worker = cursorBackupRequestDto.worker();
         LocalDateTime start = cursorBackupRequestDto.startedAtFrom();
         LocalDateTime end = cursorBackupRequestDto.startedAtTo();
         BackupStatus status = cursorBackupRequestDto.status();
         String sortField = cursorBackupRequestDto.sortField();
         String sortDirection = cursorBackupRequestDto.sortDirection();
-        Long size = cursorBackupRequestDto.size();
+        int size = cursorBackupRequestDto.size();
 
+        String safeSortField = (sortField == null || sortField.isBlank()) ? "endedAt" : sortField;
+        Sort.Direction direction = "DESC".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Sort sort = Sort.by(direction ,safeSortField);
+        Pageable pageable = PageRequest.of( 0,size
+        , sort
+        );
         Slice<Backup> backupSlice = backupRepository.getBackupSlice(worker, status, start,
-                end, sortDirection, sortField, size);
-
+                end,pageable);
+        log.info("backupSlice : {}",backupSlice);
         LocalDateTime nextCursor =  backupSlice.isEmpty()
                 ? LocalDateTime.now()
                 : backupSlice.getContent().

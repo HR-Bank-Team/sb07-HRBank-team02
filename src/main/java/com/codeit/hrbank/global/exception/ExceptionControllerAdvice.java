@@ -50,7 +50,9 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public ErrorResponse exception(Exception e){
-        return new ErrorResponse(LocalDateTime.now(),400,"잘못된 요청입니다.",null);
+        return new ErrorResponse(LocalDateTime.now(),400,"잘못된 요청입니다.",e.getMessage());
     }
 
 }
+
+

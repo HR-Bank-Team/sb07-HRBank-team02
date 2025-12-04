@@ -8,6 +8,7 @@ import com.codeit.hrbank.domain.backup.entity.BackupStatus;
 import com.codeit.hrbank.domain.backup.sevice.BackupService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/backups")
@@ -29,12 +31,11 @@ public class BackupController implements BackupControllerDocs {
                                                                      @RequestParam(required = false) LocalDateTime startedAtTo,
                                                                      @RequestParam(required = false) String sortDirection,
                                                                      @RequestParam(required = false) String sortField,
-                                                                     @RequestParam(required = false) Long size
+                                                                     @RequestParam(required = false) int size
     ) {
         CursorBackupRequestDto dto = new CursorBackupRequestDto(
-                worker, status, startedAtFrom, startedAtTo, sortDirection, sortField, size
+                worker, status, startedAtFrom, startedAtTo, sortField, sortDirection, size
         );
-
 
         CursorPageResponseBackupDto backupList = backupService.getBackupList(dto);
         return new ResponseEntity<>(backupList, HttpStatus.OK);
