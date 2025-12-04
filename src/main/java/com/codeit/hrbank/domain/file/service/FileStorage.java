@@ -39,7 +39,7 @@ public class FileStorage {
     @Transactional
     public Long saveCsv(String fileName, List<ExportEmployeeDto> exportEmployeeDtos) throws IOException {
         Path storagePath = Path.of(backupFilePath,fileName);
-        if(!Files.exists(storagePath)) return extendCsv(storagePath,exportEmployeeDtos);
+        if(Files.exists(storagePath)) return extendCsv(storagePath,exportEmployeeDtos);
 
         BufferedWriter bw =Files.newBufferedWriter(storagePath);
 
