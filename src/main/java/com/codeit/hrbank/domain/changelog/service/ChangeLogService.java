@@ -1,9 +1,6 @@
 package com.codeit.hrbank.domain.changelog.service;
 
-import com.codeit.hrbank.domain.changelog.dto.ChangeLogDto;
-import com.codeit.hrbank.domain.changelog.dto.ChangeLogFilter;
-import com.codeit.hrbank.domain.changelog.dto.CursorPageResponseChangeLogDto;
-import com.codeit.hrbank.domain.changelog.dto.DiffDto;
+import com.codeit.hrbank.domain.changelog.dto.*;
 import com.codeit.hrbank.domain.changelog.entity.ChangeLog;
 import com.codeit.hrbank.domain.changelog.entity.ChangeLogType;
 import com.codeit.hrbank.domain.changelog.entity.Diff;
@@ -11,7 +8,6 @@ import com.codeit.hrbank.domain.changelog.mapper.ChangeLogMapper;
 import com.codeit.hrbank.domain.changelog.mapper.DiffMapper;
 import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
 import com.codeit.hrbank.domain.changelog.repository.DiffRepository;
-import com.codeit.hrbank.domain.employee.entity.Employee;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -35,12 +30,19 @@ public class ChangeLogService {
             String employeeNumber,
             String ipAddress,
             String memo,
-            Employee employee) {
+            CreateLogDetailCommand dtoCommand) {
         ChangeLog changeLog = new ChangeLog(ChangeLogType.CREATED, ipAddress, LocalDateTime.now(), memo, employeeNumber);
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
-        List<Diff> diffs = extractDetailsByAdd(employee, savedLog);
-        diffRepository.saveAll(diffs);
+        List<Diff> result = new ArrayList<>();
+        result.add(new Diff("입사일", null, dtoCommand.getHireDate(), savedLog));
+        result.add(new Diff("이름", null, dtoCommand.getName(), savedLog));
+        result.add(new Diff("직함", null, dtoCommand.getPosition(), savedLog));
+        result.add(new Diff("부서명", null, dtoCommand.getDepartment(), savedLog));
+        result.add(new Diff("이메일", null, dtoCommand.getEmail(), savedLog));
+        result.add(new Diff("사번", null, dtoCommand.getEmployeeNumber(), savedLog));
+        result.add(new Diff("상태", null, dtoCommand.getStatus(), savedLog));
+        diffRepository.saveAll(result);
 
     }
 
@@ -49,14 +51,14 @@ public class ChangeLogService {
             String employeeNumber,
             String ipAddress,
             String memo,
-            Map<String, List<String>> diffMapData) {
+            List<DiffCommand> diffCommands) {
         ChangeLog changeLog =
                 new ChangeLog(ChangeLogType.UPDATED, ipAddress, LocalDateTime.now(), memo, employeeNumber);
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
         List<Diff> diffs = new ArrayList<>();
-        for (Map.Entry<String, List<String>> entry : diffMapData.entrySet()) {
-            diffs.add(new Diff(entry.getKey(), entry.getValue().get(0), entry.getValue().get(1), savedLog));
+        for (DiffCommand diffCommand : diffCommands) {
+            diffs.add(new Diff(diffCommand.getPropertyName(), diffCommand.getBefore(), diffCommand.getAfter(), savedLog));
         }
         diffRepository.saveAll(diffs);
     }
@@ -65,12 +67,18 @@ public class ChangeLogService {
     public void recordLogByDeleteEmployee(
             String employeeNumber,
             String ipAddress,
-            Employee employee) {
+            DeleteLogDetailCommand dtoCommand) {
         ChangeLog changeLog = new ChangeLog(ChangeLogType.DELETED, ipAddress, LocalDateTime.now(), ChangeLogType.DELETED.getValue(), employeeNumber);
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
-        List<Diff> diffs = extractDetailsByDelete(employee, savedLog);
-        diffRepository.saveAll(diffs);
+        List<Diff> result = new ArrayList<>();
+        result.add(new Diff("입사일", null, dtoCommand.getHireDate(), savedLog));
+        result.add(new Diff("이름", null, dtoCommand.getName(), savedLog));
+        result.add(new Diff("직함", null, dtoCommand.getPosition(), savedLog));
+        result.add(new Diff("부서명", null, dtoCommand.getDepartment(), savedLog));
+        result.add(new Diff("이메일", null, dtoCommand.getEmail(), savedLog));
+        result.add(new Diff("상태", null, dtoCommand.getStatus(), savedLog));
+        diffRepository.saveAll(result);
     }
 
     @Transactional(readOnly = true)
@@ -86,7 +94,7 @@ public class ChangeLogService {
                 request.getSortField(),
                 request.getSortDirection(),
                 request.getIdAfter(),
-                request.getSize()+1);
+                request.getSize() + 1);
 
         boolean hasNext = changeLogs.size() > request.getSize();
         int endIndex = Math.min(changeLogs.size(), request.getSize());
@@ -119,9 +127,10 @@ public class ChangeLogService {
 
 
     }
+
     @Transactional(readOnly = true)
-    public List<DiffDto> getDiffsByChannelLogId(Long changeLogId){
-        if (!changeLogRepository.existsChangeLogById(changeLogId)){
+    public List<DiffDto> getDiffsByChannelLogId(Long changeLogId) {
+        if (!changeLogRepository.existsChangeLogById(changeLogId)) {
             throw new IllegalArgumentException("존재하지 않는 채널 수정 이력입니다.");
         }
         List<Diff> byChangeLogId = diffRepository.findByChangeLogId(changeLogId);
@@ -131,37 +140,14 @@ public class ChangeLogService {
     @Transactional(readOnly = true)
     public Long countChangeLogsBetween(
             LocalDateTime fromDate,
-            LocalDateTime toDate){
-        if(fromDate==null){
+            LocalDateTime toDate) {
+        if (fromDate == null) {
             fromDate = LocalDateTime.now().minusDays(7);
         }
-        if(toDate==null){
-            toDate=LocalDateTime.now();
+        if (toDate == null) {
+            toDate = LocalDateTime.now();
         }
-        return changeLogRepository.countByAtBetween(fromDate,toDate);
+        return changeLogRepository.countByAtBetween(fromDate, toDate);
     }
 
-
-    private List<Diff> extractDetailsByAdd(Employee employee, ChangeLog changeLog) {
-        List<Diff> result = new ArrayList<>();
-        result.add(new Diff("입사일", null, employee.getHireDate().toString(), changeLog));
-        result.add(new Diff("이름", null, employee.getName(), changeLog));
-        result.add(new Diff("직함", null, employee.getPosition(), changeLog));
-        result.add(new Diff("부서명", null, employee.getDepartment().getName(), changeLog));
-        result.add(new Diff("이메일", null, employee.getEmail(), changeLog));
-        result.add(new Diff("사번", null, employee.getEmployeeNumber(), changeLog));
-        result.add(new Diff("상태", null, employee.getStatus().toString(), changeLog));
-        return result;
-    }
-
-    private List<Diff> extractDetailsByDelete(Employee employee, ChangeLog changeLog) {
-        List<Diff> result = new ArrayList<>();
-        result.add(new Diff("입사일",  employee.getHireDate().toString(),null, changeLog));
-        result.add(new Diff("이름",  employee.getName(),null, changeLog));
-        result.add(new Diff("직함",  employee.getPosition(),null, changeLog));
-        result.add(new Diff("부서명",  employee.getDepartment().getName(),null, changeLog));
-        result.add(new Diff("이메일",  employee.getEmail(),null, changeLog));
-        result.add(new Diff("상태",  employee.getStatus().toString(),null, changeLog));
-        return result;
-    }
 }
