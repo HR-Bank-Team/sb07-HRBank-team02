@@ -1,4 +1,4 @@
-package com.codeit.hrbank.changelog.unit.service;
+package com.codeit.hrbank.changelog.integration.service;
 
 import com.codeit.hrbank.domain.changelog.dto.ChangeLogDto;
 import com.codeit.hrbank.domain.changelog.dto.ChangeLogFilter;
