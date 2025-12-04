@@ -1,7 +1,9 @@
 package com.codeit.hrbank.domain.backup.repository;
 
 import com.codeit.hrbank.domain.backup.entity.Backup;
+import com.codeit.hrbank.domain.backup.entity.BackupSortField;
 import com.codeit.hrbank.domain.backup.entity.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupSortDirection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -24,8 +26,8 @@ public class BackSliceRepository {
             LocalDateTime startedAtTo,
             LocalDateTime cursor,
             Long idAfter,
-            String sortField,
-            String sortDirection,
+            BackupSortField sortField,
+            BackupSortDirection sortDirection,
             int size
     ) {
         String sql = "SELECT * FROM backups b WHERE 1=1";
@@ -36,21 +38,21 @@ public class BackSliceRepository {
         if (startedAtTo != null) sql += " AND b.started_at <= :startedAtTo";
 
         if (cursor != null) {
-            if ("startedAt".equals(sortField)) {
-                if ("asc".equals(sortDirection))
+            if (BackupSortField.STARTED_AT.equals(sortField)) {
+                if (BackupSortDirection.ASC.equals(sortDirection))
                     sql += " AND (b.started_at > :cursor OR (b.started_at = :cursor AND b.id > :idAfter))";
                 else
                     sql += " AND (b.started_at < :cursor OR (b.started_at = :cursor AND b.id > :idAfter))";
-            } else if ("endedAt".equals(sortField)) {
-                if ("asc".equals(sortDirection))
+            } else if (BackupSortField.ENDED_AT.equals(sortField)) {
+                if (BackupSortDirection.ASC.equals(sortDirection))
                     sql += " AND (b.ended_at > :cursor OR (b.ended_at = :cursor AND b.id > :idAfter))";
                 else
                     sql += " AND (b.ended_at < :cursor OR (b.ended_at = :cursor AND b.id > :idAfter))";
             }
         }
 
-        if ("startedAt".equals(sortField)) sql += " ORDER BY b.started_at " + sortDirection;
-        else if ("endedAt".equals(sortField)) sql += " ORDER BY b.ended_at " + sortDirection;
+        if (BackupSortField.STARTED_AT.equals(sortField)) sql += " ORDER BY b.started_at " + sortDirection.getValue();
+        else if (BackupSortField.ENDED_AT.equals(sortField)) sql += " ORDER BY b.ended_at " + sortDirection.getValue();
 
         sql += " LIMIT :size";
 
@@ -74,8 +76,8 @@ public class BackSliceRepository {
             LocalDateTime startedAtTo,
             LocalDateTime cursor,
             Long idAfter,
-            String sortField,
-            String sortDirection
+            BackupSortField sortField,
+            BackupSortDirection sortDirection
     ) {
         String sql = "SELECT COUNT(*) FROM backups b WHERE 1=1";
 
@@ -85,13 +87,13 @@ public class BackSliceRepository {
         if (startedAtTo != null) sql += " AND b.started_at <= :startedAtTo";
 
         if (cursor != null) {
-            if ("startedAt".equals(sortField)) {
-                if ("asc".equals(sortDirection))
+            if (BackupSortField.STARTED_AT.equals(sortField)) {
+                if (BackupSortDirection.ASC.equals(sortDirection))
                     sql += " AND (b.started_at > :cursor OR (b.started_at = :cursor AND b.id > :idAfter))";
                 else
                     sql += " AND (b.started_at < :cursor OR (b.started_at = :cursor AND b.id > :idAfter))";
-            } else if ("endedAt".equals(sortField)) {
-                if ("asc".equals(sortDirection))
+            } else if (BackupSortField.ENDED_AT.equals(sortField)) {
+                if (BackupSortDirection.ASC.equals(sortDirection))
                     sql += " AND (b.ended_at > :cursor OR (b.ended_at = :cursor AND b.id > :idAfter))";
                 else
                     sql += " AND (b.ended_at < :cursor OR (b.ended_at = :cursor AND b.id > :idAfter))";
