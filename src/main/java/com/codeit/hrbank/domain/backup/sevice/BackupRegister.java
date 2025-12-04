@@ -42,7 +42,7 @@ public class BackupRegister {
     @Transactional
     public BackupDto createBackup(String ip) {
         LocalDateTime latestChangeTime = changeLogRepository.getLatestChangeTime();
-        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.now() : latestChangeTime;
+        latestChangeTime = (latestChangeTime == null) ? LocalDateTime.MIN : latestChangeTime;
 
         if(!isNecessaryBackup(latestChangeTime)){
             Backup backup = backupRepository.save(

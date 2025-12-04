@@ -27,14 +27,66 @@ public interface BackupRepository extends JpaRepository<Backup, Long> {
     List<Backup> getBackupByTime(LocalDateTime startedAtFrom,LocalDateTime startedAtTo);
 
     @Query("""
-    select bu from Backup bu where (:worker is null or bu.worker like %:worker%)
-    and (:status is null or bu.status = :status)
-    and (:startedAtFrom is null or bu.endedAt between :startedAtFrom and :startedAtTo)
+    select bu from Backup bu
+    where (:worker is null or bu.worker like %:worker%)
+      and (:status is null or bu.status = :status)
+      and (:cursor is null or (bu.startedAt > :cursor or (bu.startedAt = :cursor and bu.id > :idAfter)))
 """)
-    Slice<Backup> getBackupSlice(
+    Slice<Backup> findByCursorStartedAtAsc(
+            @Param("worker") String worker,
+            @Param("status") BackupStatus status,
+            @Param("cursor") LocalDateTime cursor,
+            @Param("sortField") String sortField,
+            @Param("sortDirection") String sortDirection,
+            @Param("idAfter") Long idAfter,
+            Pageable pageable
+    );
+
+    @Query("""
+    select bu from Backup bu
+    where (:worker is null or bu.worker like %:worker%)
+      and (:status is null or bu.status = :status)
+      and (:startedAtFrom is null or bu.startedAt >= :startedAtFrom)
+      and (:startedAtTo is null or bu.startedAt <= :startedAtTo)
+      and (
+          (:sortDirection = 'asc' and
+              (
+                  (:sortField = 'startedAt' and (:cursor is null or (bu.startedAt > :cursor or (bu.startedAt = :cursor and bu.id > :idAfter))))
+                  or
+                  (:sortField = 'endedAt' and (:cursor is null or (bu.endedAt > :cursor or (bu.endedAt = :cursor and bu.id > :idAfter))))
+              )
+          )
+          or
+          (:sortDirection = 'desc' and
+              (
+                  (:sortField = 'startedAt' and (:cursor is null or (bu.startedAt < :cursor or (bu.startedAt = :cursor and bu.id > :idAfter))))
+                  or
+                  (:sortField = 'endedAt' and (:cursor is null or (bu.endedAt < :cursor or (bu.endedAt = :cursor and bu.id > :idAfter))))
+              )
+          )
+      )
+""")
+    Slice<Backup>  findStartedAt(
+            @Param("worker") String worker,
+            @Param("status") BackupStatus status,
+            @Param("cursor") LocalDateTime cursor,
+            @Param("startedAtFrom") LocalDateTime startedAtFrom,
+            @Param("startedAtTo") LocalDateTime startedAtTo,
+            @Param("sortField") String sortField,
+            @Param("sortDirection") String sortDirection,
+            @Param("idAfter") Long idAfter,
+            Pageable pageable
+
+    );
+
+    @Query("""
+    select count(bu)from Backup bu where (:worker is null or bu.worker like %:worker%)
+    and (:status is null or bu.status = :status)
+""")
+    long totalCount(
             @Param("worker") String worker,
             @Param("status") BackupStatus status,
             @Param("startedAtFrom") LocalDateTime startedAtFrom,
-            @Param("startedAtTo") LocalDateTime startedAtTo,
-            Pageable pageable);
+            @Param("startedAtTo") LocalDateTime startedAtTo);
+
 }

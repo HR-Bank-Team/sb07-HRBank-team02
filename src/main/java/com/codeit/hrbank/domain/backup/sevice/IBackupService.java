@@ -8,6 +8,7 @@ import com.codeit.hrbank.domain.backup.entity.BackupStatus;
 import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.CursorPageBackupMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
+import com.codeit.hrbank.domain.backup.repository.BackupTestRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 
 
 @Slf4j
@@ -30,6 +33,8 @@ public class IBackupService implements BackupService{
     private final BackupMapper backupMapper;
     private final BackupRegister backupRegister;
     private final CursorPageBackupMapper cursorPageBackupMapper;
+    private final BackupTestRepository backupTestRepository;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -37,8 +42,13 @@ public class IBackupService implements BackupService{
 
 
         String worker = cursorBackupRequestDto.worker();
-        LocalDateTime start = cursorBackupRequestDto.startedAtFrom();
-        LocalDateTime end = cursorBackupRequestDto.startedAtTo();
+        LocalDateTime start = cursorBackupRequestDto.startedAtFrom()==null
+                ?null
+                :cursorBackupRequestDto.startedAtFrom().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+
+        LocalDateTime end = cursorBackupRequestDto.startedAtTo()==null
+                ?null
+                :cursorBackupRequestDto.startedAtTo().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
         BackupStatus status = cursorBackupRequestDto.status();
         String sortField = cursorBackupRequestDto.sortField();
         String sortDirection = cursorBackupRequestDto.sortDirection();
@@ -48,30 +58,38 @@ public class IBackupService implements BackupService{
         Sort.Direction direction = "DESC".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         Sort sort = Sort.by(direction ,safeSortField);
-        Pageable pageable = PageRequest.of( 0,size
+        Pageable pageable = PageRequest.of( 0,size+1
         , sort
         );
-        Slice<Backup> backupSlice = backupRepository.getBackupSlice(worker, status, start,
-                end,pageable);
-        log.info("backupSlice : {}",backupSlice);
-        LocalDateTime nextCursor =  backupSlice.isEmpty()
-                ? LocalDateTime.now()
-                : backupSlice.getContent().
-                get(backupSlice.getContent().size()-1).getStartedAt();;
 
-        if(sortField.equalsIgnoreCase("startedAt")) nextCursor =
-                backupSlice.isEmpty()
-                        ? LocalDateTime.now()
-                        : backupSlice.getContent().
-                        get(backupSlice.getContent().size()-1).getStartedAt();
 
-        if(sortField.equalsIgnoreCase("endedAt")) nextCursor =
-                backupSlice.isEmpty()
-                        ? LocalDateTime.now()
-                        : backupSlice.getContent().
-                        get(backupSlice.getContent().size()-1).getEndedAt();
+        Slice<Backup> backupSlice;
+        var backupList =backupTestRepository.getBackupSlice(
+                worker,
+                status,
+                start,
+                end,
+                cursorBackupRequestDto.cursor(),
+                cursorBackupRequestDto.idAfter(),
+                sortField,
+                sortDirection,
+                size+1
+        );
+        List<BackupDto> backupDtoList = backupList.stream().map(backupMapper::toDto).toList();
 
-        return cursorPageBackupMapper.toDto(backupSlice,nextCursor);
+
+        Long totalElement = backupTestRepository.countBackup(
+                worker,
+                status,
+                start,
+                end,
+                cursorBackupRequestDto.cursor(),
+                cursorBackupRequestDto.idAfter(),
+                sortField,
+                sortDirection
+        );
+
+        return cursorPageBackupMapper.toDto(backupDtoList,totalElement,size,sortField);
     }
 
     @Override
