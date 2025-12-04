@@ -48,8 +48,8 @@ public class ChangeLogCustomRepositoryImpl implements ChangeLogCustomRepository 
                 else sql += " AND (c.at < :cursor OR (c.at = :cursor AND c.id > :idAfter))";
             } else {
                 if (sortDirection.equals("asc"))
-                    sql += " AND (c.ip_address > :cursor OR (c.at = :cursor AND c.id < :idAfter))";
-                else sql += " AND (c.ip_address < :cursor OR (c.at = :cursor AND c.id > :idAfter))";
+                    sql += " AND (c.ip_address > :cursor OR (c.ip_address = :cursor AND c.id < :idAfter))";
+                else sql += " AND (c.ip_address < :cursor OR (c.ip_address = :cursor AND c.id > :idAfter))";
             }
         }
         if (sortField.equals("at")) {

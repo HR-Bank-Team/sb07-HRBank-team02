@@ -87,8 +87,8 @@ public class ChangeLogService {
                 request.getEmployeeNumber(),
                 request.getMemo(),
                 request.getIpAddress(),
-                request.getAtFrom(),
-                request.getAtTo(),
+                request.getAtFrom()==null?null: request.getAtFrom().toLocalDateTime(),
+                request.getAtTo()==null?null: request.getAtTo().toLocalDateTime(),
                 request.getType(),
                 request.getCursor(),
                 request.getSortField(),
@@ -116,8 +116,8 @@ public class ChangeLogService {
                 request.getEmployeeNumber(),
                 request.getMemo(),
                 request.getIpAddress(),
-                request.getAtFrom(),
-                request.getAtTo(),
+                request.getAtFrom()==null?null: request.getAtFrom().toLocalDateTime(),
+                request.getAtTo()==null?null: request.getAtTo().toLocalDateTime(),
                 request.getType());
 
         List<ChangeLogDto> list = result.stream()
