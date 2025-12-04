@@ -8,13 +8,17 @@ import com.codeit.hrbank.domain.backup.entity.BackupStatus;
 import com.codeit.hrbank.domain.backup.sevice.BackupService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/backups")
@@ -25,20 +29,22 @@ public class BackupController implements BackupControllerDocs {
     @GetMapping("")
     @Override
     public ResponseEntity<CursorPageResponseBackupDto> getBackupPage(@RequestParam(required = false) String worker
-            , @RequestParam(required = false) BackupStatus status, @RequestParam(required = false) LocalDateTime startedAtFrom,
-                                                                     @RequestParam(required = false) LocalDateTime startedAtTo,
+            , @RequestParam(required = false) BackupStatus status, @RequestParam(required = false) Instant startedAtFrom,
+                                                                     @RequestParam(required = false) Instant startedAtTo,
                                                                      @RequestParam(required = false) String sortDirection,
                                                                      @RequestParam(required = false) String sortField,
-                                                                     @RequestParam(required = false) Long size
+                                                                     @RequestParam(required = false) int size,
+                                                                     @RequestParam(required = false) LocalDateTime cursor,
+                                                                     @RequestParam(required = false) Long idAfter
     ) {
         CursorBackupRequestDto dto = new CursorBackupRequestDto(
-                worker, status, startedAtFrom, startedAtTo, sortDirection, sortField, size
+                worker, status, startedAtFrom, startedAtTo, sortField, sortDirection, size,cursor,idAfter
         );
-
 
         CursorPageResponseBackupDto backupList = backupService.getBackupList(dto);
         return new ResponseEntity<>(backupList, HttpStatus.OK);
     }
+
 
     @PostMapping("")
     @Override

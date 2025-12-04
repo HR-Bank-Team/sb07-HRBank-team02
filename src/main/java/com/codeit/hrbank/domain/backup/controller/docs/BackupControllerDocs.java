@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+
 @Tag(name = "Backup", description = "Backup API")
 public interface BackupControllerDocs {
     @Operation(summary = "전체 백업 목록 조회")
@@ -74,12 +76,15 @@ public interface BackupControllerDocs {
     )
     @GetMapping("")
     ResponseEntity<CursorPageResponseBackupDto> getBackupPage(@RequestParam(required = false) String worker
-            , @RequestParam(required = false) BackupStatus status, @RequestParam(required = false) LocalDateTime startedAtFrom,
-                                                              @RequestParam(required = false) LocalDateTime startedAtTo,
+            , @RequestParam(required = false) BackupStatus status, @RequestParam(required = false) Instant startedAtFrom,
+                                                              @RequestParam(required = false) Instant startedAtTo,
                                                               @RequestParam(required = false) String sortDirection,
                                                               @RequestParam(required = false) String sortField,
-                                                              @RequestParam(required = false) Long size
+                                                              @RequestParam(required = false) int size,
+                                                              @RequestParam(required = false) LocalDateTime cursor,
+                                                              @RequestParam(required = false) Long idAfter
     );
+
 
     @Operation(summary = "백업 생성")
     @ApiResponses (

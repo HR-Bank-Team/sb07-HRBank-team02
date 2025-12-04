@@ -8,15 +8,19 @@ import com.codeit.hrbank.domain.backup.entity.BackupStatus;
 import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.CursorPageBackupMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
+import com.codeit.hrbank.domain.backup.repository.BackSliceRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IBackupService implements BackupService{
@@ -25,40 +29,51 @@ public class IBackupService implements BackupService{
     private final BackupMapper backupMapper;
     private final BackupRegister backupRegister;
     private final CursorPageBackupMapper cursorPageBackupMapper;
+    private final BackSliceRepository backSliceRepository;
+
 
     @Override
     @Transactional(readOnly = true)
     public CursorPageResponseBackupDto getBackupList(CursorBackupRequestDto cursorBackupRequestDto) {
 
         String worker = cursorBackupRequestDto.worker();
-        LocalDateTime start = cursorBackupRequestDto.startedAtFrom();
-        LocalDateTime end = cursorBackupRequestDto.startedAtTo();
+        LocalDateTime start = cursorBackupRequestDto.startedAtFrom()==null
+                ?null
+                :cursorBackupRequestDto.startedAtFrom().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+
+        LocalDateTime end = cursorBackupRequestDto.startedAtTo()==null
+                ?null
+                :cursorBackupRequestDto.startedAtTo().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
         BackupStatus status = cursorBackupRequestDto.status();
         String sortField = cursorBackupRequestDto.sortField();
         String sortDirection = cursorBackupRequestDto.sortDirection();
-        Long size = cursorBackupRequestDto.size();
+        int size = cursorBackupRequestDto.size();
 
-        Slice<Backup> backupSlice = backupRepository.getBackupSlice(worker, status, start,
-                end, sortDirection, sortField, size);
+        var backupList = backSliceRepository.getBackupSlice(
+                worker,
+                status,
+                start,
+                end,
+                cursorBackupRequestDto.cursor(),
+                cursorBackupRequestDto.idAfter(),
+                sortField,
+                sortDirection,
+                size+1
+        );
+        List<BackupDto> backupDtoList = backupList.stream().map(backupMapper::toDto).toList();
 
-        LocalDateTime nextCursor =  backupSlice.isEmpty()
-                ? LocalDateTime.now()
-                : backupSlice.getContent().
-                get(backupSlice.getContent().size()-1).getStartedAt();;
+        Long totalElement = backSliceRepository.countBackup(
+                worker,
+                status,
+                start,
+                end,
+                cursorBackupRequestDto.cursor(),
+                cursorBackupRequestDto.idAfter(),
+                sortField,
+                sortDirection
+        );
 
-        if(sortField.equalsIgnoreCase("startedAt")) nextCursor =
-                backupSlice.isEmpty()
-                        ? LocalDateTime.now()
-                        : backupSlice.getContent().
-                        get(backupSlice.getContent().size()-1).getStartedAt();
-
-        if(sortField.equalsIgnoreCase("endedAt")) nextCursor =
-                backupSlice.isEmpty()
-                        ? LocalDateTime.now()
-                        : backupSlice.getContent().
-                        get(backupSlice.getContent().size()-1).getEndedAt();
-
-        return cursorPageBackupMapper.toDto(backupSlice,nextCursor);
+        return cursorPageBackupMapper.toDto(backupDtoList,totalElement,size,sortField);
     }
 
     @Override
