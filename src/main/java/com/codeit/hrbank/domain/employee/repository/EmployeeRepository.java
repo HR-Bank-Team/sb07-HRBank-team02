@@ -97,16 +97,18 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         and (:hireDateTo is null or e.hireDate < :hireDateTo)
         and (:status is null or e.status = :status)
         and (
-            (:sortDirection = 'asc' and
-                (:sortField = 'name' and (:cursor is null or (e.name > :cursor or (e.name = :cursor and e.id > :idAfter))))
-                or (:sortField = 'hireDate' and (:cursor is null or (e.hireDate > CAST(:cursor AS java.time.LocalDate) or (e.hireDate = CAST(:cursor AS java.time.LocalDate) and e.id > :idAfter))))
-                or (:sortField = 'employeeNumber' and (:cursor is null or (e.employeeNumber > :cursor or (e.employeeNumber = :cursor and e.id > :idAfter))))
+            (:sortDirection = 'asc' and (
+                    (:sortField = 'name' and (:cursor is null or (e.name > :cursor or (e.name = :cursor and e.id > :idAfter))))
+                    or (:sortField = 'hireDate' and (:cursor is null or (e.hireDate > CAST(:cursor AS java.time.LocalDate) or (e.hireDate = CAST(:cursor AS java.time.LocalDate) and e.id > :idAfter))))
+                    or (:sortField = 'employeeNumber' and (:cursor is null or (e.employeeNumber > :cursor or (e.employeeNumber = :cursor and e.id > :idAfter))))
+                )
             )
             or
-            (:sortDirection = 'desc' and
-                (:sortField = 'name' and (:cursor is null or (e.name < :cursor or (e.name = :cursor and e.id > :idAfter))))
-                or (:sortField = 'hireDate' and (:cursor is null or (e.hireDate < CAST(:cursor AS java.time.LocalDate) or (e.hireDate = CAST(:cursor AS java.time.LocalDate) and e.id > :idAfter))))
-                or (:sortField = 'employeeNumber' and (:cursor is null or (e.employeeNumber < :cursor or (e.employeeNumber = :cursor and e.id > :idAfter))))
+            (:sortDirection = 'desc' and (
+                    (:sortField = 'name' and (:cursor is null or (e.name < :cursor or (e.name = :cursor and e.id > :idAfter))))
+                    or (:sortField = 'hireDate' and (:cursor is null or (e.hireDate < CAST(:cursor AS java.time.LocalDate) or (e.hireDate = CAST(:cursor AS java.time.LocalDate) and e.id > :idAfter))))
+                    or (:sortField = 'employeeNumber' and (:cursor is null or (e.employeeNumber < :cursor or (e.employeeNumber = :cursor and e.id > :idAfter))))
+                )
             )
         )
     """)
