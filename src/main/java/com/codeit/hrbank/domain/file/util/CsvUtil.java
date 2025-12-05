@@ -26,7 +26,7 @@ public class CsvUtil {
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bos, StandardCharsets.UTF_8);
         CSVWriter csvWriter = new CSVWriter(outputStreamWriter);
 
-        String[] header = {"ID", "사원번호", "이름", "이메일", "부서", "직책", "채용일", "상태"};
+        String[] header = {"ID", "사원번호", "이름", "이메일", "부서", "직책", "채용일자", "상태"};
         csvWriter.writeNext(header);
 
         // 데이터 작성
