@@ -251,7 +251,7 @@ public class DepartmentServiceIntegrationTest {
                 departmentRepository.save(department);
             }
 
-            CursorPageRequestDepartmentDto request = new CursorPageRequestDepartmentDto(null, null, null, "ASC", "establishedDate", 5);
+            CursorPageRequestDepartmentDto request = new CursorPageRequestDepartmentDto(null, null, null, SortDirection.ASC, SortField.establishedDate, 5);
 
             // when
             CursorPageResponseDepartmentDto departmentWithCountEmployeeSlice = departmentService.getAllDepartments(request);
