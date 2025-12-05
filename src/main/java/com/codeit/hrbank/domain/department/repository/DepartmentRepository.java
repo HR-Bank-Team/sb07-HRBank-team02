@@ -57,7 +57,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
                             OR
                             (:sortField = 'establishedDate' AND
                                 (:cursorValue IS NULL
-                                    OR d.establishedDate < CAST(:cursorValue AS java.time.LocalDate)\s
+                                    OR d.establishedDate < CAST(:cursorValue AS java.time.LocalDate)
                                     OR (d.establishedDate = CAST(:cursorValue AS java.time.LocalDate) AND d.id > :idAfter)
                                 )
                             )
