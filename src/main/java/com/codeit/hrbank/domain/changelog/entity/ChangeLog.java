@@ -8,10 +8,9 @@ import jakarta.persistence.Enumerated;
 
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+
 
 @Entity
 @Table(name = "change_logs")
@@ -22,7 +21,7 @@ public class ChangeLog extends BaseEntity {
 
   @Column(nullable = false, length = 100)
   @Enumerated(EnumType.STRING)
-  private ChannelLogType type;
+  private ChangeLogType type;
 
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;

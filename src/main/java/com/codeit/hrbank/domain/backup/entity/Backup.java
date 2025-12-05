@@ -1,5 +1,6 @@
 package com.codeit.hrbank.domain.backup.entity;
 
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 import com.codeit.hrbank.domain.base.BaseEntity;
 import com.codeit.hrbank.domain.file.entity.File;
 import jakarta.persistence.*;
@@ -38,4 +39,18 @@ public class Backup extends BaseEntity {
             unique = true
     )
     private File file;
+
+    public Backup backupComplete(File file){
+        this.endedAt = LocalDateTime.now();
+        this.file = file;
+        this.status = BackupStatus.COMPLETED;
+        return this;
+    }
+
+    public Backup backupFail(File file){
+        this.endedAt = LocalDateTime.now();
+        this.file = file;
+        this.status = BackupStatus.FAILED;
+        return this;
+    }
 }

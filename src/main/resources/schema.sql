@@ -1,7 +1,7 @@
 CREATE TABLE departments (
                              id BIGSERIAL PRIMARY KEY,
                              name VARCHAR(100) NOT NULL UNIQUE,
-                             established_date TIMESTAMP NOT NULL,
+                             established_date DATE NOT NULL,
                              description TEXT NOT NULL,
                              created_at TIMESTAMP NOT NULL,
                              updated_at TIMESTAMP
@@ -21,7 +21,7 @@ CREATE TABLE employees (
                            name VARCHAR(100) NOT NULL,
                            email VARCHAR(100) NOT NULL UNIQUE,
                            position VARCHAR(100) NOT NULL,
-                           hire_date TIMESTAMP NOT NULL,
+                           hire_date DATE NOT NULL,
                            employee_number VARCHAR(255) NOT NULL UNIQUE,
                            status VARCHAR(100) NOT NULL DEFAULT 'ACTIVE',
                            created_at TIMESTAMP NOT NULL,

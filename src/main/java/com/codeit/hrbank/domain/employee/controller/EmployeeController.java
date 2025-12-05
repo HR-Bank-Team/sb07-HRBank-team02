@@ -1,0 +1,126 @@
+package com.codeit.hrbank.domain.employee.controller;
+
+import com.codeit.hrbank.domain.employee.controller.docs.EmployeeControllerDocs;
+import com.codeit.hrbank.domain.employee.dto.*;
+import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
+import com.codeit.hrbank.domain.employee.service.EmployeeService;
+import com.codeit.hrbank.global.util.Ipv4Converter;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/employees")
+public class EmployeeController implements EmployeeControllerDocs {
+
+    private final EmployeeService employeeService;
+
+    // 직원 목록 조회
+    @GetMapping
+    public ResponseEntity<CursorPageResponseEmployeeDto> getAllEmployee(CursorPageRequestEmployeeDto request) {
+        CursorPageResponseEmployeeDto response = employeeService.getAllEmployee(request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 직원 상세 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDto> getEmployee(@PathVariable Long id) {
+        EmployeeDto response = employeeService.getEmployee(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // 직원 등록
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EmployeeDto> createEmployee(
+            @RequestPart("employee") EmployeeCreateRequest request,
+            @RequestPart(value = "profile", required = false) MultipartFile file,
+            HttpServletRequest servletRequest
+    ) throws IOException {
+        // IP 추출
+        String clientIp = Ipv4Converter.getClientIp(servletRequest);
+
+        EmployeeDto response = employeeService.createEmployee(request, file, clientIp);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    // 직원 정보 수정
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EmployeeDto> updateEmployee(
+            @PathVariable Long id,
+            @RequestPart("employee") EmployeeUpdateRequest request,
+            @RequestPart(value = "profile", required = false) MultipartFile file,
+            HttpServletRequest servletRequest
+    ) throws IOException {
+        // IP 추출
+        String clientIp = Ipv4Converter.getClientIp(servletRequest);
+
+        EmployeeDto response = employeeService.updateEmployee(id, request, file, clientIp);
+        return ResponseEntity.ok(response);
+    }
+
+    // 직원 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEmployee(
+            @PathVariable Long id,
+            HttpServletRequest servletRequest
+    ) throws IOException {
+        // IP 추출
+        String clientIp = Ipv4Converter.getClientIp(servletRequest);
+
+        employeeService.deleteEmployee(id, clientIp);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 직원 수 조회 (LocalDate 기반)
+    @GetMapping("/count")
+    public ResponseEntity<Long> getEmployeeCount(
+            @RequestParam(required = false) EmployeeStatus status,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fromDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate toDate
+    ) {
+
+        long count = employeeService.getEmployeeCount(status, fromDate, toDate);
+        return ResponseEntity.ok(count);
+    }
+
+
+    // 직원 분포 조회
+    @GetMapping("/stats/distribution")
+    public ResponseEntity<List<EmployeeDistributionDto>> getEmployeeDistribution(
+            @RequestParam(defaultValue = "department") String groupBy,
+            @RequestParam(defaultValue = "ACTIVE") EmployeeStatus status
+    ) {
+        List<EmployeeDistributionDto> response =
+                employeeService.getEmployeeDistribution(groupBy, status);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // 직원 증감 추이 조회 (Trend)
+    @GetMapping("/stats/trend")
+    public ResponseEntity<List<EmployeeTrendDto>> trendEmployee(
+            @ModelAttribute EmployeeTrendRequest employeeTrendRequest
+    ) {
+        List<EmployeeTrendDto> employeeTrend =
+                employeeService.getEmployeeTrend(employeeTrendRequest);
+
+        return ResponseEntity.ok(employeeTrend);
+    }
+}

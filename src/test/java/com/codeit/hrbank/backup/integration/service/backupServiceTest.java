@@ -1,0 +1,67 @@
+package com.codeit.hrbank.backup.integration.service;
+
+import com.codeit.hrbank.backup.util.TestFixture;
+import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
+import com.codeit.hrbank.domain.backup.sevice.BackupRegister;
+import com.codeit.hrbank.domain.backup.sevice.BackupService;
+import com.codeit.hrbank.domain.changelog.repository.ChangeLogRepository;
+import com.codeit.hrbank.domain.department.entity.Department;
+import com.codeit.hrbank.domain.department.repository.DepartmentRepository;
+import com.codeit.hrbank.domain.employee.repository.EmployeeRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@SpringBootTest
+@Transactional
+public class backupServiceTest {
+
+
+    @Autowired
+    private BackupService backupService;
+
+    @Autowired
+    private BackupRegister backupRegister;
+    @Autowired
+    private ChangeLogRepository changeLogRepository;
+
+    @Autowired
+    TestFixture fixture;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Test
+    @DisplayName("[정상 케이스] 백업 생성")
+    void backupCreate() throws Exception {
+        Department department = departmentRepository.save(fixture.departmentFactory());
+        employeeRepository.save(fixture.employeeFactory(department));
+        changeLogRepository.save(fixture.changeLogFactory());
+        BackupDto backup = backupRegister.createBackup("1.5.5.7");
+
+        assertNotNull(backup);
+    }
+
+    @Test
+    @DisplayName("[정상 케이스] 최근 백업 조회")
+    void getLatestBackup() throws Exception {
+        //given
+        BackupDto LatestBackup = backupRegister.createBackup("1.5.5.7");
+
+        //when
+
+        BackupDto backup = backupService.getLatestBackup();
+
+        //then
+        assertEquals(LatestBackup.id(),backup.id());
+        
+    }
+}

@@ -4,12 +4,9 @@ import com.codeit.hrbank.domain.base.BaseUpdatableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -25,6 +22,23 @@ public class Department extends BaseUpdatableEntity {
     private String description;
 
     @Column(name = "established_date", nullable = false)
-    private LocalDateTime establishedDate;
+    private LocalDate establishedDate;
+
+    public void update(String name, String description, LocalDate localDate) {
+        if (name == null || name.isBlank() ) {
+            throw new IllegalArgumentException("부서명은 필수입니다.");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("설명은 필수입니다.");
+        }
+        if (localDate == null) {
+            throw new IllegalArgumentException("설립일은 필수입니다.");
+        }
+
+        this.name = name;
+        this.description = description;
+        this.establishedDate = localDate;
+    }
+
 
 }
