@@ -53,11 +53,6 @@ public class CsvUtil {
 
         OutputStream os = Files.newOutputStream(filePath, StandardOpenOption.APPEND);
         BufferedOutputStream bos = new BufferedOutputStream(os);
-
-        bos.write(0xEF);
-        bos.write(0xBB);
-        bos.write(0xBF);
-
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bos, StandardCharsets.UTF_8);
         CSVWriter csvWriter = new CSVWriter(outputStreamWriter);
 
