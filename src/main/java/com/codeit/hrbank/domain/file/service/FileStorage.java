@@ -117,10 +117,7 @@ public class FileStorage {
     private Path resolveProfilePath(Long id){
         String fileName = fileRepository.findById(id).orElseThrow().getName();
         String fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
-        String fileNameWithoutExtension = fileName.substring(0,fileName.lastIndexOf("."));
-        fileName = fileNameWithoutExtension+"_" + id.toString() + "." + fileExtension;
-        byte[] fileNameBytes = fileName.getBytes(StandardCharsets.UTF_8);
-        fileName = new String(fileNameBytes, StandardCharsets.UTF_8);
+        fileName = id.toString() + "." + fileExtension;
         return Path.of(profilePath,fileName);
     }
 
