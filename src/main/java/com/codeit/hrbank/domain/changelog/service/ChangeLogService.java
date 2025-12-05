@@ -31,7 +31,7 @@ public class ChangeLogService {
             String ipAddress,
             String memo,
             CreateLogDetailCommand dtoCommand) {
-        ChangeLog changeLog = new ChangeLog(ChangeLogType.CREATED, ipAddress, LocalDateTime.now(), memo, employeeNumber);
+        ChangeLog changeLog = new ChangeLog(ChangeLogType.CREATED, ipAddress, LocalDateTime.now(ZoneId.of("Asia/Seoul")), memo, employeeNumber);
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
         List<Diff> result = new ArrayList<>();
@@ -53,7 +53,7 @@ public class ChangeLogService {
             String memo,
             List<DiffCommand> diffCommands) {
         ChangeLog changeLog =
-                new ChangeLog(ChangeLogType.UPDATED, ipAddress, LocalDateTime.now(), memo, employeeNumber);
+                new ChangeLog(ChangeLogType.UPDATED, ipAddress, LocalDateTime.now(ZoneId.of("Asia/Seoul")), memo, employeeNumber);
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
         List<Diff> diffs = new ArrayList<>();
@@ -68,7 +68,7 @@ public class ChangeLogService {
             String employeeNumber,
             String ipAddress,
             DeleteLogDetailCommand dtoCommand) {
-        ChangeLog changeLog = new ChangeLog(ChangeLogType.DELETED, ipAddress, LocalDateTime.now(), ChangeLogType.DELETED.getValue(), employeeNumber);
+        ChangeLog changeLog = new ChangeLog(ChangeLogType.DELETED, ipAddress, LocalDateTime.now(ZoneId.of("Asia/Seoul")), ChangeLogType.DELETED.getValue(), employeeNumber);
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
         List<Diff> result = new ArrayList<>();
