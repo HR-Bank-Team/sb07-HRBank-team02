@@ -9,6 +9,7 @@ import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.CursorPageBackupMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
 import com.codeit.hrbank.domain.backup.repository.BackSliceRepository;
+import com.codeit.hrbank.global.util.Ipv4Converter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,8 +75,8 @@ public class IBackupService implements BackupService{
     }
 
     @Override
-    public BackupDto createBackup(HttpServletRequest request) throws Exception {
-        String ip = request.getRemoteAddr();
+    public BackupDto createBackup(HttpServletRequest request) {
+        String ip = Ipv4Converter.getClientIp(request);
         return backupRegister.createBackup(ip);
     }
 
