@@ -4,7 +4,7 @@ import com.codeit.hrbank.domain.backup.dto.request.CursorBackupRequestDto;
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.dto.response.CursorPageResponseBackupDto;
 import com.codeit.hrbank.domain.backup.entity.Backup;
-import com.codeit.hrbank.domain.backup.entity.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.CursorPageBackupMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
@@ -36,7 +36,6 @@ public class IBackupService implements BackupService{
     @Transactional(readOnly = true)
     public CursorPageResponseBackupDto getBackupList(CursorBackupRequestDto cursorBackupRequestDto) {
 
-        String worker = cursorBackupRequestDto.worker();
         LocalDateTime start = cursorBackupRequestDto.startedAtFrom()==null
                 ?null
                 :cursorBackupRequestDto.startedAtFrom().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
@@ -45,35 +44,33 @@ public class IBackupService implements BackupService{
                 ?null
                 :cursorBackupRequestDto.startedAtTo().atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
         BackupStatus status = cursorBackupRequestDto.status();
-        String sortField = cursorBackupRequestDto.sortField();
-        String sortDirection = cursorBackupRequestDto.sortDirection();
         int size = cursorBackupRequestDto.size();
 
         var backupList = backSliceRepository.getBackupSlice(
-                worker,
+                cursorBackupRequestDto.worker(),
                 status,
                 start,
                 end,
                 cursorBackupRequestDto.cursor(),
                 cursorBackupRequestDto.idAfter(),
-                sortField,
-                sortDirection,
+                cursorBackupRequestDto.sortField(),
+                cursorBackupRequestDto.sortDirection(),
                 size+1
         );
         List<BackupDto> backupDtoList = backupList.stream().map(backupMapper::toDto).toList();
 
         Long totalElement = backSliceRepository.countBackup(
-                worker,
+                cursorBackupRequestDto.worker(),
                 status,
                 start,
                 end,
                 cursorBackupRequestDto.cursor(),
                 cursorBackupRequestDto.idAfter(),
-                sortField,
-                sortDirection
+                cursorBackupRequestDto.sortField(),
+                cursorBackupRequestDto.sortDirection()
         );
 
-        return cursorPageBackupMapper.toDto(backupDtoList,totalElement,size,sortField);
+        return cursorPageBackupMapper.toDto(backupDtoList,totalElement,size,cursorBackupRequestDto.sortField());
     }
 
     @Override

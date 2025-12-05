@@ -2,7 +2,9 @@ package com.codeit.hrbank.domain.backup.controller.docs;
 
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.dto.response.CursorPageResponseBackupDto;
-import com.codeit.hrbank.domain.backup.entity.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupSortDirection;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupSortField;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -78,8 +80,8 @@ public interface BackupControllerDocs {
     ResponseEntity<CursorPageResponseBackupDto> getBackupPage(@RequestParam(required = false) String worker
             , @RequestParam(required = false) BackupStatus status, @RequestParam(required = false) Instant startedAtFrom,
                                                               @RequestParam(required = false) Instant startedAtTo,
-                                                              @RequestParam(required = false) String sortDirection,
-                                                              @RequestParam(required = false) String sortField,
+                                                              @RequestParam(required = false) BackupSortDirection sortDirection,
+                                                              @RequestParam(required = false) BackupSortField sortField,
                                                               @RequestParam(required = false) int size,
                                                               @RequestParam(required = false) LocalDateTime cursor,
                                                               @RequestParam(required = false) Long idAfter
