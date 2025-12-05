@@ -72,12 +72,12 @@ public class ChangeLogService {
         ChangeLog savedLog = changeLogRepository.save(changeLog);
 
         List<Diff> result = new ArrayList<>();
-        result.add(new Diff("입사일", null, dtoCommand.getHireDate(), savedLog));
-        result.add(new Diff("이름", null, dtoCommand.getName(), savedLog));
-        result.add(new Diff("직함", null, dtoCommand.getPosition(), savedLog));
-        result.add(new Diff("부서명", null, dtoCommand.getDepartment(), savedLog));
-        result.add(new Diff("이메일", null, dtoCommand.getEmail(), savedLog));
-        result.add(new Diff("상태", null, dtoCommand.getStatus(), savedLog));
+        result.add(new Diff("입사일",  dtoCommand.getHireDate(), null, savedLog));
+        result.add(new Diff("이름",  dtoCommand.getName(), null, savedLog));
+        result.add(new Diff("직함",  dtoCommand.getPosition(), null,savedLog));
+        result.add(new Diff("부서명",  dtoCommand.getDepartment(), null,savedLog));
+        result.add(new Diff("이메일",  dtoCommand.getEmail(),null, savedLog));
+        result.add(new Diff("상태", dtoCommand.getStatus(), null,savedLog));
         diffRepository.saveAll(result);
     }
 
