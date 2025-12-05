@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.text.MessageFormat;
 import java.util.List;
 
 @Component
@@ -132,28 +130,6 @@ public class FileStorage {
     private Path resolveBackupPath(Long id){
         String fileName = fileRepository.findById(id).orElseThrow().getName();
         return Path.of(backupFilePath,fileName);
-    }
-
-    private Long extendCsv(Path storagePath, List<ExportEmployeeDto> exportEmployeeDtos ) throws IOException {
-
-        BufferedWriter bw =Files.newBufferedWriter(storagePath,StandardOpenOption.APPEND);
-        for (ExportEmployeeDto dto : exportEmployeeDtos) {
-            String line = MessageFormat.format("{0},{1},{2},{3},{4},{5},{6},{7}",
-                    dto.id(),
-                    dto.employeeNumber(),
-                    dto.name(),
-                    dto.email(),
-                    dto.departmentName(),
-                    dto.position(),
-                    dto.hireDate(),
-                    dto.status()
-            );
-            bw.write(line);
-            bw.newLine();
-        }
-        bw.flush();
-        bw.close();
-        return Files.size(storagePath);
     }
 
 }
