@@ -4,6 +4,7 @@ import com.codeit.hrbank.domain.employee.controller.docs.EmployeeControllerDocs;
 import com.codeit.hrbank.domain.employee.dto.*;
 import com.codeit.hrbank.domain.employee.entity.EmployeeStatus;
 import com.codeit.hrbank.domain.employee.service.EmployeeService;
+import com.codeit.hrbank.global.util.Ipv4Converter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -46,7 +47,7 @@ public class EmployeeController implements EmployeeControllerDocs {
             HttpServletRequest servletRequest
     ) throws IOException {
         // IP 추출
-        String clientIp = servletRequest.getRemoteAddr();
+        String clientIp = Ipv4Converter.getClientIp(servletRequest);
 
         EmployeeDto response = employeeService.createEmployee(request, file, clientIp);
 
@@ -64,7 +65,7 @@ public class EmployeeController implements EmployeeControllerDocs {
             HttpServletRequest servletRequest
     ) throws IOException {
         // IP 추출
-        String clientIp = servletRequest.getRemoteAddr();
+        String clientIp = Ipv4Converter.getClientIp(servletRequest);
 
         EmployeeDto response = employeeService.updateEmployee(id, request, file, clientIp);
         return ResponseEntity.ok(response);
@@ -77,7 +78,7 @@ public class EmployeeController implements EmployeeControllerDocs {
             HttpServletRequest servletRequest
     ) throws IOException {
         // IP 추출
-        String clientIp = servletRequest.getRemoteAddr();
+        String clientIp = Ipv4Converter.getClientIp(servletRequest);
 
         employeeService.deleteEmployee(id, clientIp);
         return ResponseEntity.noContent().build();
