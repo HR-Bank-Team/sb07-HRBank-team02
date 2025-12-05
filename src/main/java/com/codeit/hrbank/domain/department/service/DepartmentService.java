@@ -52,6 +52,7 @@ public class DepartmentService {
                 request.cursor(),
                 request.idAfter(),
                 request.sortField(),
+                request.sortDirection(),
                 pageable
         );
 

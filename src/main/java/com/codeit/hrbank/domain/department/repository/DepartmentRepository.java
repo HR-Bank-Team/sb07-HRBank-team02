@@ -18,22 +18,59 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     // 서비스 단에서 쓸 때 => Pageable pageable = PageRequest.of(0, 5, Sort.by("name").ascending());
     // NOTE: 프로젝션 사용 매핑을 위해 같은 이름이더래도 AS 사용
     @Query("""
-                SELECT d.id AS id, d.name AS name, d.description AS description, d.establishedDate AS establishedDate, count(e) AS employeeCount FROM Department d
-                LEFT JOIN Employee e on e.department = d
-                WHERE (:keyword IS NULL OR d.name LIKE %:keyword% OR d.description LIKE %:keyword%)
-                AND (
-                    :cursorValue IS NULL OR
-                    (:sortField = 'name' AND (d.name > :cursorValue OR (d.name = :cursorValue AND d.id > :idAfter))) OR
-                    (:sortField = 'establishedDate' AND (d.establishedDate > CAST(:cursorValue AS java.time.LocalDate) OR 
-                          (d.establishedDate = CAST(:cursorValue AS java.time.LocalDate) AND d.id > :idAfter)))
-                )
-                GROUP BY d.id, d.name, d.description, d.establishedDate
+                SELECT
+                        d.id AS id,
+                        d.name AS name,
+                        d.description AS description,
+                        d.establishedDate AS establishedDate,
+                        COUNT(e) AS employeeCount
+                    FROM Department d
+                    LEFT JOIN Employee e ON e.department = d
+                    WHERE
+                        (:keyword IS NULL
+                            OR d.name LIKE %:keyword%
+                            OR d.description LIKE %:keyword%)
+                    AND (
+                        (:sortDirection = 'asc' AND (
+                            (:sortField = 'name' AND
+                                (:cursorValue IS NULL
+                                    OR d.name > :cursorValue
+                                    OR (d.name = :cursorValue AND d.id > :idAfter)
+                                )
+                            )
+                            OR
+                            (:sortField = 'establishedDate' AND
+                                (:cursorValue IS NULL
+                                    OR d.establishedDate > CAST(:cursorValue AS java.time.LocalDate)
+                                    OR (d.establishedDate = CAST(:cursorValue AS java.time.LocalDate) AND d.id > :idAfter)
+                                )
+                            )
+                        ))
+                        OR
+                        (:sortDirection = 'desc' AND (
+                            (:sortField = 'name' AND
+                                (:cursorValue IS NULL
+                                    OR d.name < :cursorValue
+                                    OR (d.name = :cursorValue AND d.id > :idAfter)
+                                )
+                            )
+                            OR
+                            (:sortField = 'establishedDate' AND
+                                (:cursorValue IS NULL
+                                    OR d.establishedDate < CAST(:cursorValue AS java.time.LocalDate)\s
+                                    OR (d.establishedDate = CAST(:cursorValue AS java.time.LocalDate) AND d.id > :idAfter)
+                                )
+                            )
+                        ))
+                    )
+                    GROUP BY d.id, d.name, d.description, d.establishedDate
             """)
     Slice<DepartmentWithCountEmployee> searchByKeywordWithCursor(
             @Param("keyword") String nameOrDescription,
             @Param("cursorValue") String cursorValue, // 정렬 컬럼 마지막 값
-            @Param("idAfter") Long idAfter,         // 마지막 id
-            @Param("sortField") String sortField, // 'name' 또는 'establishedDate'
+            @Param("idAfter") Long idAfter,           // 마지막 id
+            @Param("sortField") String sortField,     // 'name' 또는 'establishedDate'
+            @Param("sortDirection") String sortDirection, //'asc' 또는 'desc'
             Pageable pageable);
 
     boolean existsByName(String name);
