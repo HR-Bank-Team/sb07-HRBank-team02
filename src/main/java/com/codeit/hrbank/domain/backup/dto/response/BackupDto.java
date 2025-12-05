@@ -1,6 +1,6 @@
 package com.codeit.hrbank.domain.backup.dto.response;
 
-import com.codeit.hrbank.domain.backup.entity.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 
 import java.time.LocalDateTime;
 

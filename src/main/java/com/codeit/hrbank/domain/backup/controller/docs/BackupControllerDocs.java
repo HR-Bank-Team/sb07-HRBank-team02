@@ -2,9 +2,9 @@ package com.codeit.hrbank.domain.backup.controller.docs;
 
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.dto.response.CursorPageResponseBackupDto;
-import com.codeit.hrbank.domain.backup.entity.BackupSortDirection;
-import com.codeit.hrbank.domain.backup.entity.BackupSortField;
-import com.codeit.hrbank.domain.backup.entity.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupSortDirection;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupSortField;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

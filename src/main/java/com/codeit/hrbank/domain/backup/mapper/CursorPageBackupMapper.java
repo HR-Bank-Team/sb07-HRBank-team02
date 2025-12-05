@@ -2,7 +2,7 @@ package com.codeit.hrbank.domain.backup.mapper;
 
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.dto.response.CursorPageResponseBackupDto;
-import com.codeit.hrbank.domain.backup.entity.BackupSortField;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupSortField;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

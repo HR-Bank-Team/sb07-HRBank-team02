@@ -1,4 +1,4 @@
-package com.codeit.hrbank.domain.backup.entity;
+package com.codeit.hrbank.domain.backup.entity.BackupEnum;
 
 public enum BackupStatus {
     IN_PROGRESS("진행 중"),

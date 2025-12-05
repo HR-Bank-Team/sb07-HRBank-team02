@@ -1,5 +1,6 @@
 package com.codeit.hrbank.domain.backup.entity;
 
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 import com.codeit.hrbank.domain.base.BaseEntity;
 import com.codeit.hrbank.domain.file.entity.File;
 import jakarta.persistence.*;

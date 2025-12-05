@@ -3,6 +3,7 @@ package com.codeit.hrbank.domain.file.service;
 import com.codeit.hrbank.domain.backup.dto.export.ExportEmployeeDto;
 import com.codeit.hrbank.domain.file.entity.File;
 import com.codeit.hrbank.domain.file.repository.FileRepository;
+import com.codeit.hrbank.domain.file.util.CsvUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,33 +36,14 @@ public class FileStorage {
     private String backupFilePath;
 
     private final FileRepository fileRepository;
+    private final CsvUtil csvUtil;
 
     @Transactional
     public Long saveCsv(String fileName, List<ExportEmployeeDto> exportEmployeeDtos) throws IOException {
+
         Path storagePath = Path.of(backupFilePath,fileName);
-        if(Files.exists(storagePath)) return extendCsv(storagePath,exportEmployeeDtos);
-
-        BufferedWriter bw =Files.newBufferedWriter(storagePath);
-
-            bw.write("ID,employeeNumber,name,email,department,position,hiredate,status");
-            bw.newLine();
-            for (ExportEmployeeDto dto : exportEmployeeDtos) {
-                String line = MessageFormat.format("{0},{1},{2},{3},{4},{5},{6},{7}",
-                        dto.id(),
-                        dto.employeeNumber(),
-                        dto.name(),
-                        dto.email(),
-                        dto.departmentName(),
-                        dto.position(),
-                        dto.hireDate(),
-                        dto.status()
-                );
-                bw.write(line);
-                bw.newLine();
-            }
-            bw.flush();
-            bw.close();
-          return Files.size(storagePath);
+        if(Files.exists(storagePath)) return csvUtil.extentBackupCsv(storagePath,exportEmployeeDtos);
+        return csvUtil.writeBackupCsv(storagePath,exportEmployeeDtos);
     }
 
     @Transactional

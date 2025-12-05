@@ -4,7 +4,7 @@ import com.codeit.hrbank.domain.backup.dto.request.CursorBackupRequestDto;
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.dto.response.CursorPageResponseBackupDto;
 import com.codeit.hrbank.domain.backup.entity.Backup;
-import com.codeit.hrbank.domain.backup.entity.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.CursorPageBackupMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;

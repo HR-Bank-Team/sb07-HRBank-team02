@@ -3,7 +3,7 @@ package com.codeit.hrbank.domain.backup.sevice;
 import com.codeit.hrbank.domain.backup.dto.export.ExportEmployeeDto;
 import com.codeit.hrbank.domain.backup.dto.response.BackupDto;
 import com.codeit.hrbank.domain.backup.entity.Backup;
-import com.codeit.hrbank.domain.backup.entity.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
 import com.codeit.hrbank.domain.backup.mapper.BackupMapper;
 import com.codeit.hrbank.domain.backup.mapper.ExportEmployeeMapper;
 import com.codeit.hrbank.domain.backup.repository.BackupRepository;
@@ -37,7 +37,7 @@ public class BackupRegister {
 
     static final String SYSTEM_USER = "SYSTEM";
     private LocalDateTime latestBackupTime = LocalDateTime.MIN;
-    static final int PAGE_SIZE = 1000;
+    static final int PAGE_SIZE = 1;
 
     @Transactional
     public BackupDto createBackup(String ip) {

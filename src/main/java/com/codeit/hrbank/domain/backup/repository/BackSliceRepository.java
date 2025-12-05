@@ -1,9 +1,9 @@
 package com.codeit.hrbank.domain.backup.repository;
 
 import com.codeit.hrbank.domain.backup.entity.Backup;
-import com.codeit.hrbank.domain.backup.entity.BackupSortField;
-import com.codeit.hrbank.domain.backup.entity.BackupStatus;
-import com.codeit.hrbank.domain.backup.entity.BackupSortDirection;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupSortField;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupStatus;
+import com.codeit.hrbank.domain.backup.entity.BackupEnum.BackupSortDirection;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
