@@ -37,7 +37,7 @@ public class BackupRegister {
 
     static final String SYSTEM_USER = "SYSTEM";
     private LocalDateTime latestBackupTime = LocalDateTime.MIN;
-    static final int PAGE_SIZE = 1;
+    static final int PAGE_SIZE = 1000;
 
     @Transactional
     public BackupDto createBackup(String ip) {
