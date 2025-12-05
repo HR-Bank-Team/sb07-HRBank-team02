@@ -119,6 +119,8 @@ public class FileStorage {
         String fileExtension = fileName.substring(fileName.lastIndexOf(".")+1);
         String fileNameWithoutExtension = fileName.substring(0,fileName.lastIndexOf("."));
         fileName = fileNameWithoutExtension+"_" + id.toString() + "." + fileExtension;
+        byte[] fileNameBytes = fileName.getBytes(StandardCharsets.UTF_8);
+        fileName = new String(fileNameBytes, StandardCharsets.UTF_8);
         return Path.of(profilePath,fileName);
     }
 
