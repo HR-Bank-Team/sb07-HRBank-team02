@@ -18,14 +18,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     boolean existsByEmail(String email);
 
-    // 직원 수 조회 (LocalDate 기반)
+    // 직원 수 조회
     long countByStatusAndHireDateBetween(
             EmployeeStatus status,
             LocalDate fromDate,
             LocalDate toDate
     );
 
-    // ✅ 2. 기간만으로 직원 수 조회 (status가 없을 때)
     long countByHireDateBetween(
             LocalDate fromDate,
             LocalDate toDate
@@ -41,9 +40,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             @Param("status") EmployeeStatus status
     );
 
-    // ============================================================
     // 직원 분포 조회 (직무별)
-    // ============================================================
     @Query("""
         select e.position as groupKey, count(e) as count
         from Employee e
@@ -59,9 +56,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         long getCount();
     }
 
-    // ============================================================
-    // 직원 증감 추이 조회용 (Trend)
-    // ============================================================
+    // 직원 증감 추이 조회용
     @Query("""
         select count(e)
         from Employee e
@@ -71,9 +66,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     long countByDepartmentId(Long departmentId);
 
-
-    // 처음 페이지를 가져오는 경우는 cursor도 null이기 때문에 idAfter가 null이더라도 문제 없이 실행
-    // idAfter를 활용하여 이름이 중복되는 경우 데이터 누락을 방지
     @Query("""
         select new com.codeit.hrbank.domain.employee.dto.EmployeeDto(
             e.id,
@@ -127,8 +119,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             Pageable pageable
     );
 
-    // 검색 조건에 맞는 total elements를 구하는 쿼리
-    // slice는 전체 값을 모르기 때문에 추가
     @Query("""
         select count(e)
         from Employee e
