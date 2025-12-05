@@ -1,6 +1,5 @@
 package com.codeit.hrbank.domain.department.dto;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.data.domain.Sort.Direction;
 
 public enum SortDirection {
