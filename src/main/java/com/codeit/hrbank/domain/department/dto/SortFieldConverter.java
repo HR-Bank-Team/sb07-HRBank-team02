@@ -1,6 +1,5 @@
 package com.codeit.hrbank.domain.department.dto;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SortFieldConverter implements Converter<String, SortField> {
     @Override
-    public @Nullable SortField convert(String source) {
+    public SortField convert(String source) {
         return SortField.from(source);
     }
 }

@@ -1,7 +1,6 @@
 package com.codeit.hrbank.domain.department.dto;
 
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SortDirectionConverter implements Converter<String, SortDirection> {
     @Override
-    public @Nullable SortDirection convert(String source) {
+    public SortDirection convert(String source) {
         return SortDirection.from(source);
     }
 }
