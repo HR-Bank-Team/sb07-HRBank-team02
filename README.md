@@ -69,8 +69,13 @@ https://sb07-hrbank-team02-hr-bank.up.railway.app
 
 - **조성만**
 - **최태훈**
-
-
+  - 직원 분포도(GroupBy) 조회 기능 구현
+    부서·직무 단위로 직원 수를 집계하는 통계 API 개발
+    @Query 기반 커스텀 쿼리 작성
+  - 직원 수 조회 API 구현 (Count API)
+    상태(status), 기간(from/to) 조건에 따라 직원 수를 집계하는 API 개발
+    비즈니스 규칙에 따라 기본 날짜 범위 적용 & 예외 처리 강화
+    Swagger 문서화 및 응답 DTO 구조 개선
 ### 📁 백업관리 & 파일관리
 
 - **황준영**
