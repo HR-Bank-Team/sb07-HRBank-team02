@@ -389,7 +389,8 @@ sb07-HRBank-team02
 <img width="1115" height="813" alt="departmentSequence" src="https://github.com/user-attachments/assets/6bfdeb4a-7dba-49d2-b462-a147db6c35c6" />
 
 ### 🔶 직원관리
-<img width="1676" height="2903" alt="직원 관리 시퀀스 다이어그램" src="https://github.com/user-attachments/assets/179861da-94a8-413a-8ceb-0c543f448bfc" />
+<img width="1095" height="810" alt="직원 관리 시퀀스 다이어그램" src="https://github.com/user-attachments/assets/73c5682f-141c-4ef9-8fb3-f42db6c2c549" />
+
 
 
 ### 📁 백업관리 & 파일관리
