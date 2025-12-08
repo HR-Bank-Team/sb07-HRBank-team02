@@ -69,7 +69,13 @@ https://sb07-hrbank-team02-hr-bank.up.railway.app
 
 - **조성만**
 - **최태훈**
-
+  - 직원 분포도(GroupBy) 조회 기능 구현
+    부서·직무 단위로 직원 수를 집계하는 통계 API 개발
+    @Query 기반 커스텀 쿼리 작성
+  - 직원 수 조회 API 구현 (Count API)
+    상태(status), 기간(from/to) 조건에 따라 직원 수를 집계하는 API 개발
+    비즈니스 규칙에 따라 기본 날짜 범위 적용 & 예외 처리 강화
+    Swagger 문서화 및 응답 DTO 구조 개선
 ### 📁 백업관리 & 파일관리
 
 - **황준영**
@@ -98,16 +104,34 @@ https://sb07-hrbank-team02-hr-bank.up.railway.app
 *(작성 예정)*
 
 ### 🔶 직원관리
+- **시간 파라미터 타입 불일치 문제**
+  - **문제:** 프론트에서 전달한 시간 정보를 백엔드에서 정상적으로 수신하지 못하는 문제  
+  - **발생 원인:** 시간 타입 파라미터가 프론트엔드에서 전달하는 형식과 불일치  
+  - **해결:** 파라미터 타입을 프론트에서 요구하는 시간 형식으로 변경하여 호환성 확보  
+  - **배운 점:** 시간 타입은 여러 종류가 있어 요청 포맷에 맞는 적절한 타입 선택이 중요함  
 
-*(작성 예정)*
 
 ### 📁 백업관리 & 파일관리
 
 *(작성 예정)*
 
 ### 📝 수정이력관리
+#### 🔍 동적 검색 조건 처리 방식 개선
 
-*(작성 예정)*
+선택적으로 적용되는 다양한 검색 조건을 처리하는 과정에서,  
+**JPQL만으로 동적 쿼리를 구성하는 방식은 가독성과 유지보수 측면에서 한계가 있음을 인식함.**
+
+검색 조건이 추가될수록 문자열 기반 JPQL은  
+분기 처리가 복잡해지고, 쿼리 오류 발생 가능성이 증가함.
+
+이를 해결하기 위해  
+**수동으로 동적 쿼리를 구성하는 방식을 도입하여 조건별 쿼리 생성 로직을 명확히 분리함.**  
+이 과정에서 **타입 안정성과 조합 가능한 조건 처리의 중요성을 확인함.**
+
+해당 경험을 통해  
+**복잡한 동적 쿼리 환경에서 Querydsl이 제공하는 구조적 장점과 필요성을 이해함.**  
+또한 Querydsl의 기초적인 사용법과 설계 방향을 학습함.
+
 
 ---
 
@@ -274,17 +298,17 @@ sb07-HRBank-team02
 │  │  │           │     │
 │  │  │           │     └─ util
 │  │  │           │        └─ CsvUtil.java
-│  │  │           │  HrBankApplication.java
-│  │  │           └─ global
-│  │  │              ├─ config
-│  │  │              │  └─ SchedulerConfig.java
-│  │  │              │
-│  │  │              ├─ exception
-│  │  │              │  ├─ ErrorResponse.java
-│  │  │              │  └─ ExceptionControllerAdvice.java
-│  │  │              │
-│  │  │              └─ util
-│  │  │
+│  │  │           ├─ global
+│  │  │           │  ├─ config
+│  │  │           │  │  └─ SchedulerConfig.java
+│  │  │           │  │
+│  │  │           │  ├─ exception
+│  │  │           │  │  ├─ ErrorResponse.java
+│  │  │           │  │  └─ ExceptionControllerAdvice.java
+│  │  │           │  │
+│  │  │           │  └─ util
+│  │  │           └─  HrBankApplication.java
+│  │  │            
 │  │  └─ resources
 │  │     ├─ application.yml
 │  │     ├─ schema.sql
@@ -320,13 +344,16 @@ sb07-HRBank-team02
 
 *(추가 예정)*
 
----
+### 🔶 직원관리
+<img width="888" height="653" alt="image" src="https://github.com/user-attachments/assets/e990f07a-7f6c-42d9-b1da-cec4f54c333a" />
+
 
 ## 🔄 시퀀스 다이어그램
 
 ### 🔷 부서관리
 
 ### 🔶 직원관리
+<img width="692" height="611" alt="image" src="https://github.com/user-attachments/assets/2b620892-403a-4183-b669-c29e25315660" />
 
 ### 📁 백업관리 & 파일관리
 
