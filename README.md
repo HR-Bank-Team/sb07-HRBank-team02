@@ -411,7 +411,9 @@ https://www.notion.so/HR-Bank-2b8dc875efeb80459584cd76aff6af9f
 ## 📝 프로젝트 회고록
 
 ### 📌 팀 발표 영상 및 자료
-[2팀_HR BANK_발표영상](https://www.youtube.com/watch?v=HIN6LyQ1zBQ)
+[2팀_HR BANK_발표영상](https://www.youtube.com/watch?v=HIN6LyQ1zBQ)  
+[2팀_HR Bank_발표자료.pdf](https://github.com/user-attachments/files/24033263/2._HR.Bank_.pdf)
+
 
 ### 👤 개인 회고
 
