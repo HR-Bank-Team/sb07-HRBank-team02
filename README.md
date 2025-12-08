@@ -70,6 +70,7 @@ https://sb07-hrbank-team02-hr-bank.up.railway.app
 - **조성만**
 - **최태훈**
 
+
 ### 📁 백업관리 & 파일관리
 
 - **황준영**
@@ -263,17 +264,17 @@ sb07-HRBank-team02
 │  │  │           │     │
 │  │  │           │     └─ util
 │  │  │           │        └─ CsvUtil.java
-│  │  │           │  HrBankApplication.java
-│  │  │           └─ global
-│  │  │              ├─ config
-│  │  │              │  └─ SchedulerConfig.java
-│  │  │              │
-│  │  │              ├─ exception
-│  │  │              │  ├─ ErrorResponse.java
-│  │  │              │  └─ ExceptionControllerAdvice.java
-│  │  │              │
-│  │  │              └─ util
-│  │  │
+│  │  │           ├─ global
+│  │  │           │  ├─ config
+│  │  │           │  │  └─ SchedulerConfig.java
+│  │  │           │  │
+│  │  │           │  ├─ exception
+│  │  │           │  │  ├─ ErrorResponse.java
+│  │  │           │  │  └─ ExceptionControllerAdvice.java
+│  │  │           │  │
+│  │  │           │  └─ util
+│  │  │           └─  HrBankApplication.java
+│  │  │            
 │  │  └─ resources
 │  │     ├─ application.yml
 │  │     ├─ schema.sql
@@ -309,7 +310,9 @@ sb07-HRBank-team02
 
 *(추가 예정)*
 
----
+### 🔶 직원관리
+<img width="888" height="653" alt="image" src="https://github.com/user-attachments/assets/e990f07a-7f6c-42d9-b1da-cec4f54c333a" />
+
 
 ## 🔄 시퀀스 다이어그램
 
