@@ -406,7 +406,7 @@ https://www.notion.so/HR-Bank-2b8dc875efeb80459584cd76aff6af9f
 ### 📌 팀 발표 영상 및 자료
 [2팀_HR BANK_발표영상](https://www.youtube.com/watch?v=HIN6LyQ1zBQ)
 
-[2팀_HR BANK_발표자료.pdf](C:\Users\user\Workspace\codeit-sprint-bootcamp\project\sb07-HRBank-team02\docs\2팀_HR BANK_발표자료.pdf)  
+[2팀_HR BANK_발표자료.pdf](./docs/2팀_HR%20BANK_발표자료.pdf) 
 
 ### 👤 개인 회고
 
