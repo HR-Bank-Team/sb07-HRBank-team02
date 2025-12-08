@@ -1,0 +1,351 @@
+# 🏺 뒤주 (HR Bank)
+
+> 곡식을 담는 ‘뒤주’에서 착안하여, 소중한 인적자원을 안전하고 체계적으로 관리하는 HR 시스템
+> 
+
+🔗 **배포 URL**
+
+https://sb07-hrbank-team02-hr-bank.up.railway.app
+
+---
+
+## 📌 프로젝트 소개
+
+**HR Bank**는 기업의 인사 정보를 편리하게 관리하는 HR 시스템입니다.
+
+### ✨ 주요 특징
+
+- 부서 및 직원 정보 **CRUD**
+- **부서명 / 이메일 중복 검증**
+- 프로필 이미지 **파일 업로드 & 조회**
+- 데이터 변경 감지 및 **자동 백업 (1시간 주기)**
+- 수정 이력 **로그 추적**
+- 검색, 정렬, **커서 기반 페이지네이션**
+- 대시보드 **통계 시각화**
+    - 직원 수 추이
+    - 부서/직무 분포
+    - 최근 변화 분석
+
+---
+
+## 📆 프로젝트 기간
+
+> 2025.11.27 ~ 2025.12.08
+> 
+
+---
+
+## 🛠 기술 스택
+
+| 분야 | 기술 |
+| --- | --- |
+| Backend | Spring Boot, Spring Security, Spring Data JPA, Spring Validation, springdoc-openapi, OpenCSV |
+| Database | PostgreSQL |
+| Common | Git & GitHub, Discord, Notion |
+| Deployment | railway.io |
+
+---
+## 👥 팀원 소개
+
+| 이름 | 역할 | GitHub |
+| --- | --- | --- |
+| 김태언 | 팀장/부서관리 | https://github.com/Taeeon-kim |
+| 최지혜 | 부서관리 | https://github.com/ChoiJiHye950 |
+| 조성만 | 직원관리 | https://github.com/BetterCodings |
+| 최태훈 | 직원관리 | https://github.com/Tae705 |
+| 황준영 | 백업/파일관리 | https://github.com/OfficialHwempire |
+| 안대식 | 수정 이력관리 | https://github.com/ian-i-an |
+
+---
+
+## 📌 팀원별 구현 기능
+
+### 🔷 부서관리
+
+- **김태언**
+- **최지혜**
+
+### 🔶 직원관리
+
+- **조성만**
+- **최태훈**
+
+### 📁 백업관리 & 파일관리
+
+- **황준영**
+
+### 📝 수정이력관리
+
+- **안대식**
+
+---
+
+## 🧩 트러블슈팅
+
+### 🔷 부서관리
+
+*(작성 예정)*
+
+### 🔶 직원관리
+
+*(작성 예정)*
+
+### 📁 백업관리 & 파일관리
+
+*(작성 예정)*
+
+### 📝 수정이력관리
+
+*(작성 예정)*
+
+---
+
+## 📂 파일 구조
+
+```
+sb07-HRBank-team02
+├─ src
+│  ├─ main
+│  │  ├─ java
+│  │  │  └─ com
+│  │  │     └─ codeit
+│  │  │        └─ hrbank
+│  │  │           ├─ domain
+│  │  │           │  ├─ backup
+│  │  │           │  │  ├─ controller
+│  │  │           │  │  │  ├─ BackupController.java
+│  │  │           │  │  │  └─ docs
+│  │  │           │  │  │     └─ BackupControllerDocs.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ dto
+│  │  │           │  │  │  ├─ export
+│  │  │           │  │  │  │  └─ ExportEmployeeDto.java
+│  │  │           │  │  │  ├─ request
+│  │  │           │  │  │  │  └─ CursorBackupRequestDto.java
+│  │  │           │  │  │  └─ response
+│  │  │           │  │  │     ├─ BackupDto.java
+│  │  │           │  │  │     └─ CursorPageResponseBackupDto.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ entity
+│  │  │           │  │  │  ├─ Backup.java
+│  │  │           │  │  │  └─ BackupEnum
+│  │  │           │  │  │     ├─ BackupSortDirection.java
+│  │  │           │  │  │     ├─ BackupSortDirectionConverter.java
+│  │  │           │  │  │     ├─ BackupSortField.java
+│  │  │           │  │  │     ├─ BackupSortFieldConverter.java
+│  │  │           │  │  │     └─ BackupStatus.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ mapper
+│  │  │           │  │  │  ├─ BackupMapper.java
+│  │  │           │  │  │  ├─ CursorPageBackupMapper.java
+│  │  │           │  │  │  └─ ExportEmployeeMapper.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ repository
+│  │  │           │  │  │  ├─ BackSliceRepository.java
+│  │  │           │  │  │  └─ BackupRepository.java
+│  │  │           │  │  │
+│  │  │           │  │  └─ sevice
+│  │  │           │  │     ├─ BackupRegister.java
+│  │  │           │  │     ├─ BackupScheduler.java
+│  │  │           │  │     ├─ BackupService.java
+│  │  │           │  │     └─ IBackupService.java
+│  │  │           │  │
+│  │  │           │  ├─ base
+│  │  │           │  │  ├─ BaseEntity.java
+│  │  │           │  │  └─ BaseUpdatableEntity.java
+│  │  │           │  │
+│  │  │           │  ├─ changelog
+│  │  │           │  │  ├─ controller
+│  │  │           │  │  │  ├─ ChangeLogController.java
+│  │  │           │  │  │  └─ docs
+│  │  │           │  │  │     └─ ChangeLogControllerDocs.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ dto
+│  │  │           │  │  │  ├─ ChangeLogDto.java
+│  │  │           │  │  │  ├─ ChangeLogFilter.java
+│  │  │           │  │  │  ├─ CreateLogDetailCommand.java
+│  │  │           │  │  │  ├─ CursorPageResponseChangeLogDto.java
+│  │  │           │  │  │  ├─ DeleteLogDetailCommand.java
+│  │  │           │  │  │  ├─ DiffCommand.java
+│  │  │           │  │  │  └─ DiffDto.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ entity
+│  │  │           │  │  │  ├─ ChangeLog.java
+│  │  │           │  │  │  ├─ ChangeLogType.java
+│  │  │           │  │  │  └─ Diff.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ mapper
+│  │  │           │  │  │  ├─ ChangeLogMapper.java
+│  │  │           │  │  │  └─ DiffMapper.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ repository
+│  │  │           │  │  │  ├─ ChangeLogCustomRepository.java
+│  │  │           │  │  │  ├─ ChangeLogCustomRepositoryImpl.java
+│  │  │           │  │  │  ├─ ChangeLogRepository.java
+│  │  │           │  │  │  └─ DiffRepository.java
+│  │  │           │  │  │
+│  │  │           │  │  └─ service
+│  │  │           │  │     └─ ChangeLogService.java
+│  │  │           │  │
+│  │  │           │  ├─ department
+│  │  │           │  │  ├─ controller
+│  │  │           │  │  │  ├─ DepartmentController.java
+│  │  │           │  │  │  └─ docs
+│  │  │           │  │  │     └─ DepartControllerDocs.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ dto
+│  │  │           │  │  │  ├─ CursorPageRequestDepartmentDto.java
+│  │  │           │  │  │  ├─ CursorPageResponseDepartmentDto.java
+│  │  │           │  │  │  ├─ DepartmentCreateRequest.java
+│  │  │           │  │  │  ├─ DepartmentDto.java
+│  │  │           │  │  │  └─ DepartmentUpdateRequest.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ entity
+│  │  │           │  │  │  └─ Department.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ mapper
+│  │  │           │  │  │  └─ DepartmentMapper.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ projection
+│  │  │           │  │  │  └─ DepartmentWithCountEmployee.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ repository
+│  │  │           │  │  │  └─ DepartmentRepository.java
+│  │  │           │  │  │
+│  │  │           │  │  └─ service
+│  │  │           │  │     └─ DepartmentService.java
+│  │  │           │  │
+│  │  │           │  ├─ employee
+│  │  │           │  │  ├─ controller
+│  │  │           │  │  │  ├─ EmployeeController.java
+│  │  │           │  │  │  └─ docs
+│  │  │           │  │  │     └─ EmployeeControllerDocs.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ dto
+│  │  │           │  │  │  ├─ CursorPageRequestEmployeeDto.java
+│  │  │           │  │  │  ├─ CursorPageResponseEmployeeDto.java
+│  │  │           │  │  │  ├─ EmployeeCreateRequest.java
+│  │  │           │  │  │  ├─ EmployeeDistributionDto.java
+│  │  │           │  │  │  ├─ EmployeeDto.java
+│  │  │           │  │  │  ├─ EmployeeTrendDto.java
+│  │  │           │  │  │  ├─ EmployeeTrendRequest.java
+│  │  │           │  │  │  ├─ EmployeeUpdateRequest.java
+│  │  │           │  │  │  ├─ SortDirection.java
+│  │  │           │  │  │  ├─ SortField.java
+│  │  │           │  │  │  └─ TimeUnit.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ entity
+│  │  │           │  │  │  ├─ Employee.java
+│  │  │           │  │  │  └─ EmployeeStatus.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ mapper
+│  │  │           │  │  │  └─ EmployeeMapper.java
+│  │  │           │  │  │
+│  │  │           │  │  ├─ repository
+│  │  │           │  │  │  └─ EmployeeRepository.java
+│  │  │           │  │  │
+│  │  │           │  │  └─ service
+│  │  │           │  │     └─ EmployeeService.java
+│  │  │           │  │
+│  │  │           │  └─ file
+│  │  │           │     ├─ controller
+│  │  │           │     │  └─ FileController.java
+│  │  │           │     │
+│  │  │           │     ├─ entity
+│  │  │           │     │  └─ File.java
+│  │  │           │     │
+│  │  │           │     ├─ repository
+│  │  │           │     │  └─ FileRepository.java
+│  │  │           │     │
+│  │  │           │     ├─ service
+│  │  │           │     │  ├─ FileService.java
+│  │  │           │     │  └─ FileStorage.java
+│  │  │           │     │
+│  │  │           │     └─ util
+│  │  │           │        └─ CsvUtil.java
+│  │  │           │  HrBankApplication.java
+│  │  │           └─ global
+│  │  │              ├─ config
+│  │  │              │  └─ SchedulerConfig.java
+│  │  │              │
+│  │  │              ├─ exception
+│  │  │              │  ├─ ErrorResponse.java
+│  │  │              │  └─ ExceptionControllerAdvice.java
+│  │  │              │
+│  │  │              └─ util
+│  │  │
+│  │  └─ resources
+│  │     ├─ application.yml
+│  │     ├─ schema.sql
+│  │     └─ static/
+│  │
+│  └─ test
+│     └─ java
+│        └─ com
+│           └─ codeit
+│              └─ hrbank
+│                 ├─ HrBankApplicationTests.java
+│                 ├─ backup/
+│                 ├─ changelog/
+│                 ├─ department/
+│                 ├─ employee/
+│                 └─ file/
+│
+├─ .gitignore
+├─ build.gradle
+├─ gradlew
+├─ gradlew.bat
+├─ settings.gradle
+└─ storage
+   ├─ backup/
+   ├─ log/
+   └─ profile/
+
+```
+
+---
+
+## 📊 클래스 다이어그램
+
+*(추가 예정)*
+
+---
+
+## 🔄 시퀀스 다이어그램
+
+### 🔷 부서관리
+
+### 🔶 직원관리
+
+### 📁 백업관리 & 파일관리
+
+### 📝 수정이력관리
+
+<img width="372" height="594" alt="sequence_diagram" src="https://github.com/user-attachments/assets/4e3901e2-cdda-4d86-9e3a-036559b09d1b" />
+
+---
+
+## 📎 팀 협업 문서
+
+📰 Notion 문서
+
+https://www.notion.so/HR-Bank-2b8dc875efeb80459584cd76aff6af9f
+
+---
+
+## 📝 프로젝트 회고록
+
+### 📌 팀 발표 자료
+
+- *(추후 업로드)*
+
+### 👤 개인 회고
+
+| 이름 | 링크 |
+| --- | --- |
+| 김태언 | (추후 추가) |
+| 최지혜 | https://www.notion.so/2c2dc875efeb800fa2a6dc6ad56b7f16 |
+| 조성만 | https://smjoe0302.tistory.com/18 |
+| 최태훈 | https://www.notion.so/HR-Bank-_-2bf844450e228043a132c2cd49313db6 |
+| 황준영 | https://www.notion.so/HR-Bank-2c2ebb626db68009920ef4f6f287d0fe |
+| 안대식 | https://ian1290.tistory.com/37 |
