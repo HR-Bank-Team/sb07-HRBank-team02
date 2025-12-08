@@ -79,6 +79,17 @@ https://sb07-hrbank-team02-hr-bank.up.railway.app
 ### 📁 백업관리 & 파일관리
 
 - **황준영**
+- 주요 기여 내용:
+    - 파일 메타 정보 관리
+    - 파일 데이터 로컬 디스크 저장
+    - 데이터 백업 관리
+    - 데이터 백업 배치 시스템
+  
+- 구현한 기능 목록:
+    - File 엔티티 서비스 , 컨트롤러, 레포지토리 레이어 구현
+    - 로컬 디스크 에 파일 저장 로직 구현  (FileStorage)
+    - 데이터 백업 서비스, 컨트롤러, 레포지토리 레이어 구현
+    - 데이터 백업 주기적으로 진행하는 배치 시스템 구현
 
 ### 📝 수정이력관리
 
@@ -105,7 +116,11 @@ https://sb07-hrbank-team02-hr-bank.up.railway.app
 
 ### 📁 백업관리 & 파일관리
 
-*(작성 예정)*
+- **트랜잭션 중간 상태 반영 불가 문제**
+    - **문제:** 백업 생성 로직이 하나의 트랜잭션 내에서 처리되어, 진행중 → 완료됨 상태를 중간에 DB에 반영 불가
+    - **발생 원인:** 트랜잭션이 완료되기 전까지는 변경 내용이 영속성 컨텍스트에만 존재하고 DB에 반영 불가
+    - **해결:** 트랜잭션 구조와 서비스 흐름을 분석한 후, 요구사항에 맞지 않는 부분을 팀과 협의하여 현실적인 상태 로직으로 재설계
+    - **배운 점:** 명세 요구를 그대로 따르기보다 기술적 제약과 서비스 흐름을 모두 고려해 팀과 소통하며 최적의 구현 방식을 찾는 것이 중요함
 
 ### 📝 수정이력관리
 #### 🔍 동적 검색 조건 처리 방식 개선
@@ -344,10 +359,12 @@ sb07-HRBank-team02
 
 ### 🔷 부서관리
 
+
 ### 🔶 직원관리
 <img width="692" height="611" alt="image" src="https://github.com/user-attachments/assets/2b620892-403a-4183-b669-c29e25315660" />
 
 ### 📁 백업관리 & 파일관리
+<img width="1877" height="1305" alt="백업 시퀀스 다이어그램" src="https://github.com/user-attachments/assets/b5f199c6-83c4-4266-a00c-321a6ba6dbbe" />
 
 ### 📝 수정이력관리
 
@@ -377,5 +394,5 @@ https://www.notion.so/HR-Bank-2b8dc875efeb80459584cd76aff6af9f
 | 최지혜 | https://www.notion.so/2c2dc875efeb800fa2a6dc6ad56b7f16 |
 | 조성만 | https://smjoe0302.tistory.com/18 |
 | 최태훈 | https://www.notion.so/HR-Bank-_-2bf844450e228043a132c2cd49313db6 |
-| 황준영 | https://www.notion.so/HR-Bank-2c2ebb626db68009920ef4f6f287d0fe |
+| 황준영 | https://officialhwempire.github.io/posts/SprintProject1/ |
 | 안대식 | https://ian1290.tistory.com/37 |
