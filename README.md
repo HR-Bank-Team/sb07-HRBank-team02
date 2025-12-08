@@ -371,7 +371,7 @@ sb07-HRBank-team02
 ## 🔄 시퀀스 다이어그램
 
 ### 🔷 부서관리
-
+<img width="1115" height="813" alt="departmentSequence" src="https://github.com/user-attachments/assets/6bfdeb4a-7dba-49d2-b462-a147db6c35c6" />
 
 ### 🔶 직원관리
 <img width="692" height="611" alt="image" src="https://github.com/user-attachments/assets/2b620892-403a-4183-b669-c29e25315660" />
