@@ -316,6 +316,7 @@ sb07-HRBank-team02
 ### 🔷 부서관리
 
 ### 🔶 직원관리
+<img width="692" height="611" alt="image" src="https://github.com/user-attachments/assets/2b620892-403a-4183-b669-c29e25315660" />
 
 ### 📁 백업관리 & 파일관리
 
