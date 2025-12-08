@@ -381,7 +381,12 @@ sb07-HRBank-team02
 
 ## 📊 클래스 다이어그램
 
-*(추가 예정)*
+<img width="852" height="430" alt="image" src="https://github.com/user-attachments/assets/6aa8ad2e-c8f3-4c6f-9ccc-05c3e7b33331" />
+
+<img width="1710" height="623" alt="image" src="https://github.com/user-attachments/assets/729c185c-888b-4435-b486-59f2d8366e3d" />
+
+
+
 
 ## 🔄 시퀀스 다이어그램
 
